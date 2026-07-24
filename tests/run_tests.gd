@@ -25,6 +25,7 @@ func _initialize() -> void:
 		"res://tests/test_content_unlock.gd",
 		"res://tests/test_horror_effects.gd",
 		"res://tests/test_browser_resolution.gd",
+		"res://tests/test_tutorial_integration.gd",
 		"res://tests/test_campaign_integration.gd",
 	]
 	for suite_path in suites:
