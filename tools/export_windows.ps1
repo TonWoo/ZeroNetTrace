@@ -16,5 +16,12 @@ $PckPath = Join-Path $BuildDir 'ZeroNetTrace.pck'
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 $ProbeProject = Join-Path $ProjectRoot '.tools\export_probe'
+if (-not (Test-Path -LiteralPath (Join-Path $ProbeProject 'project.godot'))) {
+    $GodotToolsRoot = Split-Path (Split-Path $GodotExe -Parent) -Parent
+    $ProbeProject = Join-Path $GodotToolsRoot 'export_probe'
+}
+if (-not (Test-Path -LiteralPath (Join-Path $ProbeProject 'project.godot'))) {
+    throw "Export probe project not found: $ProbeProject"
+}
 & $GodotExe --headless --path $ProbeProject --script res://check_pack.gd -- $PckPath
 exit $LASTEXITCODE
