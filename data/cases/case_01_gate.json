@@ -1,0 +1,1183 @@
+{
+  "caseId": "case_01_gate_2am",
+  "title": "01：凌晨两点的门禁",
+  "order": 1,
+  "estimatedMinutes": 30,
+  "coreQuestion": "谁在凌晨两点使用沈栀的门禁身份，又是谁把她从学院系统中抹除？",
+  "unlockRequirements": [
+    "prologue_dead_mail"
+  ],
+  "investigationLines": [
+    {
+      "id": "C1-L1",
+      "title": "两点整的门",
+      "beats": "检索 N17，取得门禁与维护记录，发现刷卡没有伴随开门。"
+    },
+    {
+      "id": "C1-L2",
+      "title": "被拿走的署名",
+      "beats": "拼出云盘凭证，核对原始论文与谈话录音，确认沈栀受到威胁。"
+    },
+    {
+      "id": "C1-L3",
+      "title": "克隆令牌",
+      "beats": "渗透版本网关，找到 NIGHT-0200 定时重放任务和夜间删改记录。"
+    },
+    {
+      "id": "C1-L4",
+      "title": "六分钟消失",
+      "beats": "进入学籍审计归档，确认 REN-0 批准跨系统身份清除。"
+    }
+  ],
+  "twists": [
+    "凌晨两点没有人刷卡；维护盒在不开门的情况下重放沈栀的克隆令牌。",
+    "沈栀没有主动退学；杜承远借助例外通道抹除她，再把夜间改动栽到她名下。"
+  ],
+  "hook": {
+    "from": "唐遥",
+    "trigger": "失联室友的学籍已被清空，但她的门禁卡每天凌晨两点准时刷进封闭实验室。",
+    "playerGoal": "确认刷卡者、找到沈栀，并证明谁删除了她的记录。"
+  },
+  "defaultNoiseResults": [
+    {
+      "title": "零网城市服务状态",
+      "url": "status.zero.local",
+      "snippet": "公共服务节点运行正常，过去二十四小时共处理 28,041,392 次请求。"
+    },
+    {
+      "title": "旧站归档索引更新公告",
+      "url": "archive-index.zero",
+      "snippet": "一批 2021—2023 年的个人主页镜像完成迁移，部分链接仍会失效。"
+    },
+    {
+      "title": "怎样整理数字遗物",
+      "url": "life.bbs.zero/thread/8831",
+      "snippet": "网友讨论账号继承、照片备份和纪念页管理，观点互相矛盾。"
+    },
+    {
+      "title": "夜间网络延迟统计",
+      "url": "netwatch.zero/reports/night",
+      "snippet": "凌晨两点至四点的平均延迟上升 7%，原因仍在排查。"
+    },
+    {
+      "title": "搜索帮助：缩短句子通常更有效",
+      "url": "help.zerosou.local/query",
+      "snippet": "尝试人物名、机构名、设备编号或材料中反复出现的短语。"
+    }
+  ],
+  "network": [
+    {
+      "addr": "campus.zero.edu",
+      "label": "澄岚学院公开门户",
+      "discoverWhen": {
+        "type": "start"
+      },
+      "defense": {
+        "mode": "public",
+        "layers": [],
+        "trace": {
+          "enabled": false
+        }
+      },
+      "files": [
+        {
+          "path": "/notice/学籍异动_0713.txt",
+          "type": "doc",
+          "content": "学籍异动公示：S20417 沈栀，数据科学系，状态由在籍调整为自愿退学。申请时间 01:58，学院审核 02:00，宿管同步 02:02，财务关闭 02:04。备注：本人线上提交，无纸质回执。",
+          "isEvidence": true,
+          "evidenceId": "ev_withdraw_notice"
+        }
+      ]
+    },
+    {
+      "addr": "gate-cache.campus",
+      "label": "N17 门禁缓存",
+      "discoverWhen": {
+        "type": "gate",
+        "id": "kg_device_search"
+      },
+      "defense": {
+        "mode": "crack",
+        "layers": [
+          {
+            "id": "ECHO",
+            "durationSec": 4.0
+          }
+        ],
+        "trace": {
+          "enabled": false
+        }
+      },
+      "files": [
+        {
+          "path": "/logs/access_0714-0717.log",
+          "type": "log",
+          "content": "2026-07-14 00:00:00 GATE-N17 seq=0000 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:00:37 GATE-N17 seq=0001 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:01:14 GATE-N17 seq=0002 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:01:51 GATE-N17 seq=0003 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:02:28 GATE-N17 seq=0004 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:03:05 GATE-N17 seq=0005 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:03:42 GATE-N17 seq=0006 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:04:19 GATE-N17 seq=0007 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:04:56 GATE-N17 seq=0008 actor=svc_01 result=OK latency=31ms\n2026-07-14 02:00:00 GATE-N17 token=S20417 source=MAINT-BOX-04 mode=REPLAY result=ACCEPT door_open=false\n2026-07-14 00:06:10 GATE-N17 seq=0010 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:06:47 GATE-N17 seq=0011 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:07:24 GATE-N17 seq=0012 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:08:01 GATE-N17 seq=0013 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:08:38 GATE-N17 seq=0014 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:09:15 GATE-N17 seq=0015 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:09:52 GATE-N17 seq=0016 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:10:29 GATE-N17 seq=0017 actor=svc_03 result=OK latency=57ms\n2026-07-15 02:00:00 GATE-N17 token=S20417 source=MAINT-BOX-04 mode=REPLAY result=ACCEPT door_open=false\n2026-07-14 00:11:43 GATE-N17 seq=0019 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:12:20 GATE-N17 seq=0020 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:12:57 GATE-N17 seq=0021 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:13:34 GATE-N17 seq=0022 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:14:11 GATE-N17 seq=0023 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:14:48 GATE-N17 seq=0024 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:15:25 GATE-N17 seq=0025 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:16:02 GATE-N17 seq=0026 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:16:39 GATE-N17 seq=0027 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:17:16 GATE-N17 seq=0028 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:17:53 GATE-N17 seq=0029 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:18:30 GATE-N17 seq=0030 actor=svc_02 result=OK latency=44ms\n2026-07-16 02:00:00 GATE-N17 token=S20417 source=MAINT-BOX-04 mode=REPLAY result=ACCEPT door_open=false\n2026-07-14 00:19:44 GATE-N17 seq=0032 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:20:21 GATE-N17 seq=0033 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:20:58 GATE-N17 seq=0034 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:21:35 GATE-N17 seq=0035 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:22:12 GATE-N17 seq=0036 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:22:49 GATE-N17 seq=0037 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:23:26 GATE-N17 seq=0038 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:24:03 GATE-N17 seq=0039 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:24:40 GATE-N17 seq=0040 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:25:17 GATE-N17 seq=0041 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:25:54 GATE-N17 seq=0042 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:26:31 GATE-N17 seq=0043 actor=svc_01 result=OK latency=31ms\n2026-07-17 02:00:00 GATE-N17 token=CHENMO source=UNKNOWN-ROOM mode=INJECTED result=ACCEPT door_open=false\n2026-07-14 00:27:45 GATE-N17 seq=0045 actor=svc_03 result=OK latency=57ms",
+          "isEvidence": true,
+          "evidenceId": "ev_gate_log"
+        },
+        {
+          "path": "/maintenance/N17_更换记录.txt",
+          "type": "doc",
+          "content": "设备 N17 于 6 月 28 日接入 MAINT-BOX-04 远程维护盒。维护盒允许在不开门的情况下重放令牌，用于测试记录链。管理员：杜承远。测试任务应在当日结束后删除，但任务 NIGHT-0200 仍处于启用状态。",
+          "isEvidence": true,
+          "evidenceId": "ev_reader_notice"
+        }
+      ]
+    },
+    {
+      "addr": "cloud.shenzhi.campus",
+      "label": "沈栀的学生云盘",
+      "discoverWhen": {
+        "type": "gate",
+        "id": "kg_device_search"
+      },
+      "defense": {
+        "mode": "credential",
+        "credentialGateId": "kg_cloud_login",
+        "layers": [],
+        "trace": {
+          "enabled": false
+        }
+      },
+      "files": [
+        {
+          "path": "/research/群体偏差模型_原始版.md",
+          "type": "doc",
+          "content": "项目作者：沈栀。创建于 2025-11-08，连续提交 143 次。本文讨论低频异常识别中，训练数据对特定群体造成的系统性误判，并提出保留人工复核与可追溯撤销链。附录列出全部数据清洗记录、模型参数来源和沈栀本人签名。杜承远仅在 2026-06-20 添加一段经费说明。",
+          "isEvidence": true,
+          "evidenceId": "ev_original_version"
+        },
+        {
+          "path": "/audio/谈话_0712.ogg",
+          "type": "audio",
+          "content": "00:00 门被关上，金属门舌回弹。\n00:04 沈栀：论文的原始数据和模型都是我做的，成员页为什么只剩你的名字？\n00:11 杜承远：署名顺序是项目安排，你先把休学表签了。\n00:18 沈栀：我没有申请休学。\n00:22 杜承远：你母亲的助学资格每学期都要复核，不要让一件小事影响家里。\n00:31 沈栀：这是威胁吗？\n00:34 杜承远：这是提醒。签完以后，账号暂时交给实验室做版本清理。\n00:43 椅子移动，纸张被推到桌面。\n00:48 沈栀：我会留一份原始记录。\n00:51 杜承远：系统里没有的东西，就不算记录。\n00:58 录音结束。",
+          "assetId": "audio_shenzhi_recording",
+          "description": "实验室谈话录音及完整文字稿",
+          "isEvidence": true,
+          "evidenceId": "ev_shenzhi_recording"
+        }
+      ]
+    },
+    {
+      "addr": "lab-gateway.orchid",
+      "label": "兰圃实验室版本网关",
+      "discoverWhen": {
+        "type": "gate",
+        "id": "kg_lab_account"
+      },
+      "defense": {
+        "mode": "crack",
+        "layers": [
+          {
+            "id": "LATTICE",
+            "durationSec": 5.0
+          },
+          {
+            "id": "PULSE",
+            "durationSec": 5.0
+          }
+        ],
+        "trace": {
+          "enabled": true,
+          "totalSeconds": 120.0,
+          "unfocusedRate": 0.25,
+          "lockoutSec": 20.0,
+          "signals": [
+            {
+              "at": 0.35,
+              "target": "relay.orchid",
+              "reduction": 0.18
+            },
+            {
+              "at": 0.7,
+              "target": "acct.dc-yuan",
+              "reduction": 0.22
+            }
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "/vcs/version_history.log",
+          "type": "log",
+          "content": "2026-07-14 00:00:00 ORCHID-VCS seq=0000 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:00:37 ORCHID-VCS seq=0001 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:01:14 ORCHID-VCS seq=0002 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:01:51 ORCHID-VCS seq=0003 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:02:28 ORCHID-VCS seq=0004 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:03:05 ORCHID-VCS seq=0005 actor=svc_05 result=OK latency=83ms\n2026-07-12 23:41:08 ORCHID-VCS commit=19ac author=shenzhi action=upload title=群体偏差原始模型 result=OK\n2026-07-14 00:04:19 ORCHID-VCS seq=0007 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:04:56 ORCHID-VCS seq=0008 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:05:33 ORCHID-VCS seq=0009 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:06:10 ORCHID-VCS seq=0010 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:06:47 ORCHID-VCS seq=0011 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:07:24 ORCHID-VCS seq=0012 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:08:01 ORCHID-VCS seq=0013 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:08:38 ORCHID-VCS seq=0014 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:09:15 ORCHID-VCS seq=0015 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:09:52 ORCHID-VCS seq=0016 actor=svc_02 result=OK latency=44ms\n2026-07-13 01:58:17 ORCHID-VCS commit=19ac author=duchengyuan action=change_owner new_owner=duchengyuan result=OK\n2026-07-14 00:11:06 ORCHID-VCS seq=0018 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:11:43 ORCHID-VCS seq=0019 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:12:20 ORCHID-VCS seq=0020 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:12:57 ORCHID-VCS seq=0021 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:13:34 ORCHID-VCS seq=0022 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:14:11 ORCHID-VCS seq=0023 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:14:48 ORCHID-VCS seq=0024 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:15:25 ORCHID-VCS seq=0025 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:16:02 ORCHID-VCS seq=0026 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:16:39 ORCHID-VCS seq=0027 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:17:16 ORCHID-VCS seq=0028 actor=svc_00 result=OK latency=18ms\n2026-07-13 02:01:03 ORCHID-VCS actor=S20417 source=MAINT-BOX-04 action=delete_history range=01..18 result=PARTIAL\n2026-07-14 00:18:30 ORCHID-VCS seq=0030 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:19:07 ORCHID-VCS seq=0031 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:19:44 ORCHID-VCS seq=0032 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:20:21 ORCHID-VCS seq=0033 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:20:58 ORCHID-VCS seq=0034 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:21:35 ORCHID-VCS seq=0035 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:22:12 ORCHID-VCS seq=0036 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:22:49 ORCHID-VCS seq=0037 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:23:26 ORCHID-VCS seq=0038 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:24:03 ORCHID-VCS seq=0039 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:24:40 ORCHID-VCS seq=0040 actor=svc_05 result=OK latency=83ms\n2026-07-13 02:04:22 ORCHID-VCS actor=REN-0 action=approve_identity_purge subject=S20417 scope=campus_all result=OK\n2026-07-14 00:25:54 ORCHID-VCS seq=0042 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:26:31 ORCHID-VCS seq=0043 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:27:08 ORCHID-VCS seq=0044 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:27:45 ORCHID-VCS seq=0045 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:28:22 ORCHID-VCS seq=0046 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:28:59 ORCHID-VCS seq=0047 actor=svc_05 result=OK latency=83ms",
+          "isEvidence": true,
+          "evidenceId": "ev_version_log"
+        },
+        {
+          "path": "/jobs/NIGHT-0200.task",
+          "type": "text",
+          "content": "job=NIGHT-0200\nowner=duchengyuan\ndevice=MAINT-BOX-04\ntoken=S20417\nschedule=02:00:00 daily\naction=replay_without_open\ncomment=保持账号活动轨迹，直至版本归属争议关闭",
+          "isEvidence": true,
+          "evidenceId": "ev_token_job"
+        }
+      ]
+    },
+    {
+      "addr": "records-audit.campus",
+      "label": "学籍审计归档",
+      "discoverWhen": {
+        "type": "gate",
+        "id": "kg_lab_account"
+      },
+      "defense": {
+        "mode": "crack",
+        "layers": [
+          {
+            "id": "VEIL",
+            "durationSec": 5.0
+          },
+          {
+            "id": "ARCHIVE",
+            "durationSec": 6.0
+          }
+        ],
+        "trace": {
+          "enabled": true,
+          "totalSeconds": 90.0,
+          "unfocusedRate": 0.25,
+          "lockoutSec": 20.0,
+          "signals": [
+            {
+              "at": 0.4,
+              "target": "audit-hop-3",
+              "reduction": 0.2
+            }
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "/approvals/S20417.purge",
+          "type": "doc",
+          "content": "对象：S20417 沈栀。请求人：杜承远。理由：自愿退学后的账号回收。常规审核：缺失。例外通道：城市数据协同接口。批准签名：REN-0。批准范围：学籍、门禁、宿管、财务、实验室成员页。执行窗口：01:58—02:04。备注：保留令牌重放权限 30 日。",
+          "isEvidence": true,
+          "evidenceId": "ev_ren0_authorization"
+        }
+      ]
+    }
+  ],
+  "knowledgeGates": [
+    {
+      "id": "kg_device_search",
+      "channel": "search",
+      "where": "搜索门禁编号",
+      "howPlayerFigures": "唐遥给出 N17，论坛提到远程维护盒。",
+      "accept": [
+        "N17 门禁",
+        "GATE-N17",
+        "N17 维护"
+      ],
+      "aliases": [
+        "门禁 N17",
+        "N17 reader",
+        "兰圃楼 N17"
+      ],
+      "hints": [
+        "规律发生在同一台设备上。",
+        "设备编号比学生姓名更适合查维护记录。",
+        "把 N17 和『门禁』一起搜索。"
+      ],
+      "unlockEffects": []
+    },
+    {
+      "id": "kg_cloud_login",
+      "channel": "login",
+      "where": "沈栀云盘登录",
+      "howPlayerFigures": "摄影社帖子写明她常用 DF-2，机背有 2023 入学标签。",
+      "accept": [
+        {
+          "user": "S20417",
+          "pass": "df22023"
+        }
+      ],
+      "aliases": [],
+      "hints": [
+        "她把最常带的东西当记忆锚点。",
+        "摄影社反复提到相机型号，入学年份也在帖子里。",
+        "相机型号小写加四位入学年。"
+      ],
+      "unlockEffects": []
+    },
+    {
+      "id": "kg_lab_account",
+      "channel": "search",
+      "where": "确认实验室负责人",
+      "howPlayerFigures": "录音、论文致谢和旧成员缓存交叉指向杜承远。",
+      "accept": [
+        "杜承远 兰圃实验室",
+        "兰圃 数据实验室 杜承远"
+      ],
+      "aliases": [
+        "duchengyuan orchid lab",
+        "杜承远 群体偏差"
+      ],
+      "hints": [
+        "录音里被点名的人，在公开网页留下过痕迹。",
+        "把负责人姓名和实验室名一起查。",
+        "搜索『杜承远 兰圃实验室』。"
+      ],
+      "unlockEffects": []
+    }
+  ],
+  "sites": [
+    {
+      "id": "site_case01_device",
+      "gateId": "kg_device_search",
+      "addresses": [
+        "campus.zero.edu/device/N17"
+      ],
+      "skin": "campus",
+      "title": "设备维护检索：N17",
+      "subtitle": "澄岚学院设施服务中心 / 公开缓存",
+      "results": [
+        {
+          "title": "N17 读卡器维护记录",
+          "url": "campus.zero.edu/facility/N17",
+          "snippet": "6 月 28 日接入 MAINT-BOX-04，测试账号由兰圃实验室提供。"
+        },
+        {
+          "title": "兰圃楼夜间施工公告",
+          "url": "campus.zero.edu/notice/lanpu-night",
+          "snippet": "施工时段 00:00—05:00，门禁可能产生不开门的测试记录。"
+        },
+        {
+          "title": "门禁重放测试说明",
+          "url": "kb.campus.zero/replay",
+          "snippet": "维护模式允许重放令牌验证日志链，正常情况下任务当天删除。"
+        },
+        {
+          "title": "N17 电源报修单",
+          "url": "repair.campus.zero/R-7721",
+          "snippet": "电源稳定，异常短响与供电无关。"
+        },
+        {
+          "title": "旧设备编号目录",
+          "url": "archive.campus.zero/readers",
+          "snippet": "N17 位于兰圃楼二层数据实验室外侧。"
+        }
+      ]
+    },
+    {
+      "id": "site_case01_forum",
+      "gateId": "kg_device_search",
+      "addresses": [
+        "bbs.campus.zero/lanpu"
+      ],
+      "skin": "forum",
+      "title": "澄岚旧论坛 / 兰圃楼与摄影社",
+      "subtitle": "访客计数 00387122　最后备份：昨夜 02:04",
+      "posts": [
+        {
+          "floor": 1,
+          "title": "摄影社器材登记怎么又丢了",
+          "author": "夜猫子",
+          "time": "2026-07-09 21:11",
+          "body": "旧器材柜的纸质表被搬走后，系统里只剩去年导入的半份名单。沈栀那台海鸥 DF-2 明明借去拍过迎新照，现在检索她的名字却显示空白。管理员说是退学账号清理，可照片社的人都记得她上个月还来洗底片。",
+          "replies": [
+            {
+              "author": "冲洗液",
+              "body": "迎新那卷我帮她扫过，DF-2 的机背确实有一块掉漆，不可能突然变成器材室公用机。"
+            },
+            {
+              "author": "旧胶卷",
+              "body": "纸表被搬走前我拍过一页，沈栀签名旁边还有归还日期；我先把原图和拍摄时间一起备份。"
+            },
+            {
+              "author": "暗房钥匙",
+              "body": "管理员口中的退学清理说不通，个人器材从来不进公物回收名单。"
+            }
+          ]
+        },
+        {
+          "floor": 2,
+          "title": "N17 门禁读头凌晨自己响",
+          "author": "纸档案",
+          "time": "2026-07-10 22:12",
+          "body": "我在兰圃楼值夜，最近十二天每天两点整，N17 都会短响一次。门没有真正打开，屏幕却记成有效刷卡。维修组换过电源也没用。我把秒表对过，误差不到一秒，这不像有人正好每天踩点。",
+          "replies": [
+            {
+              "author": "夜航员",
+              "body": "我上周守到两点，响声先于屏幕亮起，走廊里没有脚步，时间却准得像定时任务。"
+            },
+            {
+              "author": "电工阿梁",
+              "body": "换电源只能排除供电毛刺；读头如果接着远程维护盒，后台照样能写一条假刷卡。"
+            },
+            {
+              "author": "门房老周",
+              "body": "N17 上个月接过维修盒，盒子编号印在机柜背面，交接单却没写是谁领走的。"
+            }
+          ]
+        },
+        {
+          "floor": 3,
+          "title": "兰圃实验室旧成员页被改过",
+          "author": "北窗",
+          "time": "2026-07-11 23:13",
+          "body": "搜索缓存还能看见沈栀是异常检测项目的第一作者，当前页面却只剩杜老师一个名字。连论文致谢的顺序也换了。网页管理员说是学生本人申请，我不信她会连自己的作品都删；摄影社存下的展板照片上，她的署名还排在最前面。",
+          "replies": [
+            {
+              "author": "论文搬运工",
+              "body": "学校知识库的五月快照还列着两位作者，六月版本才把沈栀整段删掉。"
+            },
+            {
+              "author": "北窗",
+              "body": "摄影社展板原图有拍摄日期，署名顺序也清楚，我已把原文件交给唐遥。"
+            },
+            {
+              "author": "缓存猎人",
+              "body": "别只存截图，把页面源文件、缓存时间和地址一起留着，之后才看得出是谁覆盖了版本。"
+            }
+          ]
+        },
+        {
+          "floor": 4,
+          "title": "休学流程真的能当天清空吗",
+          "author": "门禁坏了",
+          "time": "2026-07-12 20:14",
+          "body": "正常休学至少要学院、财务、宿管三处同步，哪怕效率再高也会留两三天延迟。沈栀的记录在 01:58 到 02:04 六分钟里同时消失，这更像有人拿了高权限批处理，而且没有留下任何线下签收编号。",
+          "replies": [
+            {
+              "author": "教务跑腿",
+              "body": "我办过休学，纸表至少盖三枚章；六分钟全清空更像直接动了主库。"
+            },
+            {
+              "author": "宿管值班",
+              "body": "宿舍系统那晚 02:01 收到批量注销，备注栏是空的，也没有学生签字扫描件。"
+            },
+            {
+              "author": "财务窗口",
+              "body": "她的学费账户没有走退款流程，按正常规则学籍状态不该先变成『不存在』。"
+            }
+          ]
+        },
+        {
+          "floor": 5,
+          "title": "DF-2 的机背刻字是谁的",
+          "author": "负片",
+          "time": "2026-07-13 21:15",
+          "body": "器材室那台 DF-2 不是公物，是沈栀自己的。机背贴着 2023 入学纪念的小标签，她总拿这个组合记东西。她说数字比人可靠，但现在最不可靠的偏偏是系统里的数字。",
+          "replies": [
+            {
+              "author": "负片",
+              "body": "那块标签是她自己用刻字带打的，DF-2 和 2023 中间还有一道短横。"
+            },
+            {
+              "author": "焦距不够",
+              "body": "我借过一次，归还时她还开玩笑说这串记号比学生证号码好记。"
+            },
+            {
+              "author": "暗房钥匙",
+              "body": "器材登记册只记机身型号，不会替私人相机贴入学年份，所以这台肯定属于她。"
+            }
+          ]
+        },
+        {
+          "floor": 6,
+          "title": "二食堂夜宵窗口搬哪了",
+          "author": "夜猫子",
+          "time": "2026-07-14 22:16",
+          "body": "今天去旧位置只看见一块封板，有人知道临时窗口开到几点吗？",
+          "replies": [
+            {
+              "author": "饿到重影",
+              "body": "临时窗口搬到二食堂西侧消防门旁，阿姨说这周都开到零点半。"
+            }
+          ]
+        },
+        {
+          "floor": 7,
+          "title": "求一根老式快门线",
+          "author": "纸档案",
+          "time": "2026-07-15 23:17",
+          "body": "摄影社周末外拍，谁有机械快门线可以借两天，我押学生证。",
+          "replies": [
+            {
+              "author": "机械快门",
+              "body": "我有一根旧线，不过接口是三毫米螺纹；周五晚在摄影社门口拿。"
+            }
+          ]
+        },
+        {
+          "floor": 8,
+          "title": "兰圃楼空调是不是坏了",
+          "author": "北窗",
+          "time": "2026-07-16 20:18",
+          "body": "三楼冷得像机房，四楼又闷，报修单已经挂了一周。",
+          "replies": [
+            {
+              "author": "报修单1142",
+              "body": "三楼机房在排热，四楼阀门又卡住了，后勤回复周六统一检修。"
+            }
+          ]
+        },
+        {
+          "floor": 9,
+          "title": "校园卡余额退款慢",
+          "author": "门禁坏了",
+          "time": "2026-07-17 21:19",
+          "body": "毕业退款第九天还没到，服务台说批次拥堵。",
+          "replies": [
+            {
+              "author": "毕业第十天",
+              "body": "我的是第十个工作日到账，周末不算；再晚就拿流水号去窗口查。"
+            }
+          ]
+        },
+        {
+          "floor": 10,
+          "title": "有人捡到灰色笔袋吗",
+          "author": "负片",
+          "time": "2026-07-18 22:10",
+          "body": "里面只有几支针管笔和一张旧车票，对我挺重要。",
+          "replies": [
+            {
+              "author": "打印室阿姨",
+              "body": "昨晚打印室窗台有个灰笔袋，我交到一楼值班台了，你去对一下旧车票。"
+            }
+          ]
+        },
+        {
+          "floor": 11,
+          "title": "夜跑路线灯灭了一段",
+          "author": "夜猫子",
+          "time": "2026-07-19 23:11",
+          "body": "西门到湖边那截路灯坏了，大家暂时结伴走。",
+          "replies": [
+            {
+              "author": "湖边慢跑",
+              "body": "保卫处已经拉了反光带，通知说周五换灯，今晚最好还是从图书馆那边绕。"
+            }
+          ]
+        },
+        {
+          "floor": 12,
+          "title": "旧论坛登录验证码收不到",
+          "author": "纸档案",
+          "time": "2026-07-20 20:12",
+          "body": "邮箱换过后一直收不到验证码，管理员看到请帮忙。",
+          "replies": [
+            {
+              "author": "老站管理员",
+              "body": "旧站只认原绑定邮箱，先看垃圾箱；仍收不到就把用户名和注册月份私信给我。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "site_case01_lab",
+      "gateId": "kg_lab_account",
+      "addresses": [
+        "orchid.campus.zero/archive/team"
+      ],
+      "skin": "campus",
+      "title": "兰圃数据实验室旧成员缓存",
+      "subtitle": "页面版本：2026-06-18",
+      "results": [
+        {
+          "title": "《低频异常中的群体偏差》项目页",
+          "url": "orchid.campus.zero/project/low-frequency",
+          "snippet": "第一作者沈栀，指导教师杜承远；当前正式页已删除学生作者。"
+        },
+        {
+          "title": "兰圃实验室成员：杜承远",
+          "url": "orchid.campus.zero/people/du",
+          "snippet": "内部账号前缀 dc-yuan，负责版本网关与设备测试。"
+        },
+        {
+          "title": "摄影社与数据实验室合作展",
+          "url": "news.campus.zero/2025/photo-data",
+          "snippet": "沈栀负责图像异常样本采集，使用海鸥 DF-2 胶片机。"
+        },
+        {
+          "title": "论文致谢缓存",
+          "url": "papers.zero/cache/LP-204",
+          "snippet": "感谢沈栀完成数据清洗、模型训练和误判分析。"
+        },
+        {
+          "title": "实验室访问规则",
+          "url": "orchid.campus.zero/rules/access",
+          "snippet": "夜间访问应使用本人令牌，不得保留离校成员权限。"
+        }
+      ]
+    }
+  ],
+  "mails": [
+    {
+      "subject": "有人每天凌晨两点用她的门禁卡",
+      "from": "唐遥 <tangyao@campus.zero>",
+      "time": "2026-07-25 21:02",
+      "body": "陈默，你可能不认识我。我和沈栀在澄岚学院合租，她十二天前突然不回消息，学校第二天就说她已经自愿退学。可她的衣服、相机药水和没交的社团照片都在房间里。最奇怪的是宿管系统：她的卡号每天凌晨两点整刷进兰圃楼，时间几乎一秒不差。昨晚我守在楼下，读卡器真的响了，但走廊里没有人。我把设备编号和退学通知附上。林薇曾经告诉我，如果一个人先从系统里消失，要找你。",
+      "signature": "唐遥 / 宿舍 7-204",
+      "attachments": [
+        {
+          "name": "退学通知.txt",
+          "path": "/notice/学籍异动_0713.txt",
+          "type": "doc",
+          "content": "S20417 沈栀：自愿退学，线上提交。四套系统在六分钟内同步关闭。"
+        }
+      ]
+    },
+    {
+      "subject": "关于 S20417 的自动回复",
+      "from": "澄岚学院学生事务中心",
+      "time": "2026-07-25 21:18",
+      "body": "您查询的学生账号 S20417 已完成离校流程。根据系统记录，该生于 7 月 13 日在线提交自愿退学申请，学院、宿管、财务和校园卡服务均已同步。由于账号处于回收状态，中心不再提供联系方式、宿舍记录或学习材料。若您认为流程存在错误，请由本人携带有效证明到线下窗口申请复核。系统不接受室友、同学或社团成员代为提交的情况说明。此邮件由流程机器人生成，请勿直接回复。",
+      "signature": "澄岚学院学生事务中心 / 工单 STU-88104",
+      "attachments": []
+    },
+    {
+      "subject": "沈栀已由警方确认安全",
+      "from": "唐遥 <tangyao@campus.zero>",
+      "time": "2026-07-26 00:46",
+      "body": "警方刚刚回了我。沈栀在姨妈家，身体安全。她说杜承远拿她母亲的助学资格逼她签休学文件，又把实验室账号和学籍一起清掉。她不敢上线，因为每次登录都会收到『身份不存在』。她愿意把原始论文、录音和纸质表格交给警方，也愿意正式作证。她让我转告你：系统里没有她，不代表她没有做过那些工作。谢谢你没有把凌晨两点的刷卡声当成鬼故事，也没有擅自去找她。",
+      "signature": "唐遥 / 已转交警方联络",
+      "attachments": [],
+      "unlockWhen": {
+        "type": "report_complete"
+      }
+    }
+  ],
+  "conversations": [
+    {
+      "id": "chat_tangyao",
+      "name": "唐遥",
+      "messages": [
+        {
+          "from": "唐遥",
+          "time": "21:04",
+          "text": "你是陈默吗？林薇以前说，如果系统里的人突然消失，可以找你。"
+        },
+        {
+          "from": "陈默",
+          "time": "21:05",
+          "text": "我是。先说名字，以及你最后一次见到她是什么时候。"
+        },
+        {
+          "from": "唐遥",
+          "time": "21:06",
+          "text": "我叫唐遥。室友沈栀，十二天没回来。校方说她自愿退学。"
+        },
+        {
+          "from": "陈默",
+          "time": "21:07",
+          "text": "她有没有亲口告诉你要退学？"
+        },
+        {
+          "from": "唐遥",
+          "time": "21:08",
+          "text": "没有。她连晾在阳台的被单都没收，桌上还有冲了一半的胶卷。"
+        },
+        {
+          "from": "陈默",
+          "time": "21:09",
+          "text": "把校方通知和她最近的账号信息发来，隐去真实证件号码。"
+        },
+        {
+          "from": "唐遥",
+          "time": "21:10",
+          "text": "还有件更怪的，她的门禁卡每天凌晨两点都会刷进兰圃楼。"
+        },
+        {
+          "from": "陈默",
+          "time": "21:11",
+          "text": "同一台读卡器？时间有没有误差？"
+        },
+        {
+          "from": "唐遥",
+          "time": "21:12",
+          "text": "N17。十二天，都是 02:00:00，最多差一秒。"
+        },
+        {
+          "from": "陈默",
+          "time": "21:13",
+          "text": "这种规律先考虑定时任务，不要把它当成她本人回来。"
+        },
+        {
+          "from": "唐遥",
+          "time": "21:14",
+          "text": "我知道听起来像鬼故事，可昨晚我就在楼下，真的听见读头响了。"
+        },
+        {
+          "from": "陈默",
+          "time": "21:15",
+          "text": "声音是真的，不代表刷卡的人是真的。先查设备编号。"
+        },
+        {
+          "from": "唐遥",
+          "time": "21:16",
+          "text": "学校论坛有人提过 N17，我把链接发你。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_device_search"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:17",
+          "text": "保留页面正文和回复。设备维护记录往往比公告诚实。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_device_search"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:18",
+          "text": "沈栀以前拍照，最常带一台很旧的 DF-2。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_cloud_login"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:19",
+          "text": "这个细节先记着。密码习惯通常藏在重复使用的东西里。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_cloud_login"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:20",
+          "text": "她 2023 年入学。你不会已经猜到密码了吧？",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_cloud_login"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:21",
+          "text": "我只有组合方向，仍要由登录结果验证。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_cloud_login"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:22",
+          "text": "她的云盘要是还能进，会不会留下最后的文件？",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_cloud_login"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:23",
+          "text": "会，也可能留下别人改过的版本。先比时间线。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_cloud_login"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:24",
+          "text": "我找到一张纸条：『杜老师又把我的名字往后挪。』",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_lab_account"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:25",
+          "text": "杜老师全名、实验室名称、论文标题，三项一起查。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_lab_account"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:26",
+          "text": "杜承远，兰圃数据实验室。论文叫《低频异常中的群体偏差》。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_lab_account"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:27",
+          "text": "这能定位公开成员页和内部账号规则。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_lab_account"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:28",
+          "text": "门禁日志里真的是她的卡号。是不是说明她回来过？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_gate_log"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:29",
+          "text": "先看读卡器有没有远程重放标记，卡号出现不等于卡片出现。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_gate_log"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:30",
+          "text": "有一列 replay_source，我之前没注意。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_gate_log"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:31",
+          "text": "把那一行和正常刷卡行并排看，设备来源会不同。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_gate_log"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:32",
+          "text": "正常是 CARD，凌晨两点是 MAINT-BOX。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_gate_log"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:33",
+          "text": "第一层反转成立：有人在重放她的令牌。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_gate_log"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:34",
+          "text": "为什么非要用她的卡？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_gate_log"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:35",
+          "text": "让后续修改都落在她名下。去找实验室版本日志。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_gate_log"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:36",
+          "text": "云盘里有一段录音，我有点不敢听。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_shenzhi_recording"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:37",
+          "text": "你可以先把原文件取回，再断开，慢慢听。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_shenzhi_recording"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:38",
+          "text": "她说杜承远逼她签休学，不签就让她家里的助学金出问题。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_shenzhi_recording"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:39",
+          "text": "录音保留原时间和哈希，这会是关键证据。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_shenzhi_recording"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:40",
+          "text": "所以她还活着？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_shenzhi_recording"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:41",
+          "text": "录音只能证明录制时活着。继续找她主动留下的联系地址。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_shenzhi_recording"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:42",
+          "text": "照片冲印单背面有她姨妈家的旧地址。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_shenzhi_recording"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:43",
+          "text": "先交给警方核实，不要自己上门惊动对方。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_shenzhi_recording"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:44",
+          "text": "警方回我了。她在姨妈家，安全，只是不敢登录任何账号。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_ren0_authorization"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:45",
+          "text": "好。现在要证明是谁清空了她的学籍。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_ren0_authorization"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:46",
+          "text": "审计归档写着 REN-0，这是什么人？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_ren0_authorization"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:47",
+          "text": "目前未知。先把它当权限签名，不要提前下结论。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_ren0_authorization"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:48",
+          "text": "沈栀愿意作证，她问你为什么帮她。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:49",
+          "text": "告诉她，我也在找一个被系统解释掉的人。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "唐遥",
+          "time": "21:50",
+          "text": "她说谢谢。还有，她想把原始论文重新署名。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "21:51",
+          "text": "证据交警方和校方调查组，别让恢复名誉再靠一次越界操作。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        }
+      ]
+    }
+  ],
+  "horrorEvents": [
+    {
+      "id": "c1_live_gate_injection",
+      "level": "B",
+      "trigger": {
+        "type": "evidence_collected",
+        "target": "ev_gate_log"
+      },
+      "once": true,
+      "variants": {
+        "full": {
+          "text": "门禁日志新增：陈默 / 当前房间 / 02:00。"
+        },
+        "reduced": {
+          "text": "日志末尾短暂出现你的名字。"
+        },
+        "off": {
+          "text": ""
+        }
+      },
+      "desktopEffect": {
+        "type": "terminal_injection",
+        "text": "scan 陈默 // LOCATION=CURRENT_ROOM"
+      }
+    },
+    {
+      "id": "c1_deleted_account_message",
+      "level": "B",
+      "trigger": {
+        "type": "evidence_collected",
+        "target": "ev_shenzhi_recording"
+      },
+      "once": true,
+      "variants": {
+        "full": {
+          "text": "已注销的沈栀账号发来：他知道你打开了。"
+        },
+        "reduced": {
+          "text": "通讯器闪过一条来自已注销账号的空消息。"
+        },
+        "off": {
+          "text": ""
+        }
+      }
+    }
+  ],
+  "caseReport": [
+    {
+      "id": "c1_q1",
+      "q": "凌晨两点的门禁记录由什么产生？",
+      "options": [
+        "沈栀本人刷卡",
+        "宿管手工补录",
+        "维护盒定时重放克隆令牌",
+        "读卡器电源故障"
+      ],
+      "answer": 2,
+      "evidence": [
+        "ev_gate_log",
+        "ev_reader_notice"
+      ]
+    },
+    {
+      "id": "c1_q2",
+      "q": "杜承远为什么继续使用沈栀的身份？",
+      "options": [
+        "替她保留宿舍",
+        "把夜间修改栽到她名下",
+        "帮她申请奖学金",
+        "测试摄影社设备"
+      ],
+      "answer": 1,
+      "evidence": [
+        "ev_token_job",
+        "ev_version_log"
+      ]
+    },
+    {
+      "id": "c1_q3",
+      "q": "沈栀为什么离开并停止登录？",
+      "options": [
+        "主动放弃论文",
+        "受到助学资格威胁并被抹除账号",
+        "加入别的实验室",
+        "忘记了密码"
+      ],
+      "answer": 1,
+      "evidence": [
+        "ev_shenzhi_recording",
+        "ev_withdraw_notice"
+      ]
+    },
+    {
+      "id": "c1_q4",
+      "q": "谁批准了跨系统清除？",
+      "options": [
+        "唐遥",
+        "普通宿管账号",
+        "REN-0 权限签名",
+        "摄影社管理员"
+      ],
+      "answer": 2,
+      "evidence": [
+        "ev_ren0_authorization"
+      ]
+    }
+  ],
+  "resolution": {
+    "surfaceTruth": "每天两点出现的不是沈栀，而是用她身份执行的定时重放。",
+    "clientOutcome": "沈栀安全并向警方提交原始材料；杜承远进入调查，论文归属启动复核。",
+    "darklineFragment": {
+      "id": "frag_ren0_purge",
+      "content": "一份本不该跨越学籍、门禁和财务系统的删除命令，批准签名只有 REN-0。"
+    }
+  },
+  "contentManifest": [
+    "剧情邮件 3 封",
+    "唐遥聊天 24 组双向往返",
+    "校园论坛 12 帖",
+    "门禁日志 46 行",
+    "版本日志 48 行",
+    "录音逐句文字稿",
+    "搜索命中页各 5 条"
+  ],
+  "artAssets": [
+    {
+      "id": "art_gate_n17",
+      "usage": "N17 门禁设备照片",
+      "size": "1024x768",
+      "prompt": "Purpose and medium: Create a documentary evidence photograph of an old access-control reader inside a Chinese university laboratory building at approximately 2:00 AM. The device must look like ordinary early-2010s institutional hardware that has been repaired and used for years, photographed by a student with a modest phone camera during an investigation. Camera and composition: Landscape 4:3 image at 1024 by 768 pixels. Eye-level camera about 1.55 meters high, standing one meter from the device with a mild three-quarter angle. Mount the old access-control reader on the right side of a scratched gray metal laboratory door; the corridor recedes toward the left background. Place the reader on the right third of the frame, large enough to inspect its screws, display, and label, while retaining enough corridor context to match the wide surveillance image. Scene and required details: The old access-control reader has yellowed light-gray ABS plastic, a tiny unlit monochrome LCD, a worn black RFID area, four small physical buttons, two mismatched screws, dust in the seams, an old maintenance sticker with its writing rubbed away, and a thin cable conduit entering from above. The adjacent door has chipped blue-gray paint around the latch and a dull stainless handle. The institutional corridor has blue-gray lower walls, dirty off-white upper walls, speckled tile flooring, a fire cabinet far away, and long fluorescent fixtures. Required readable text: The exact uppercase label N17 must be clearly readable once on a small white laminated strip directly beneath the reader. N17 is the only fully readable text. Do not generate room names, warning labels, Chinese notices, dates, brand names, keypad numbers, logos, or other legible characters. Continuity: This is a close evidence view of the same N17 reader visible farther down the hall in art_lanpu_corridor.png. Keep the reader on the right side of the same gray laboratory door, with the corridor extending left. The hardware must remain mundane and mechanically plausible because the mystery comes from the log records, not from a visibly supernatural machine. Lighting and image defects: Cold aging fluorescent ceiling light with a slight green cast, weak phone-camera auto exposure, mild sensor grain in the shadows, imperfect white balance, a soft reflection on the door handle, and no flash hotspot. The LCD may catch a faint dull reflection but must not glow with symbols. Preserve realistic low-light softness without making the image too dark to inspect. Do not include: No futuristic biometric scanner, no face-recognition camera, no touchscreen, no bright LEDs, no neon, no green code, no sparks, no blood, no ghost, no person, no hand holding a card, no security guard, no dramatic Dutch angle, no cinematic fog, no luxury architecture, no pristine new hardware, no readable poster text, and no horror entity reflected in metal. Output requirements: Produce one realistic 1024x768 evidence photo with natural phone-camera imperfections, no added caption, no border, no watermark, and no interface overlay. The result should resemble an unedited photograph attached to a campus forum post. Shared visual style: muted colors, early-2000s Chinese internet aesthetic, slightly low-res, candid documentary realism, no futuristic neon."
+    },
+    {
+      "id": "art_shenzhi_df2",
+      "usage": "沈栀的旧胶片机",
+      "size": "800x600",
+      "prompt": "Purpose and medium: Create a candid evidence photograph of Shen Zhi's well-used 35mm film camera on a Chinese university dormitory desk. It should communicate that the owner is a serious student photographer with limited money and a habit of labeling equipment, not a collector displaying a luxury vintage camera. Camera and composition: Landscape 4:3 image at 800 by 600 pixels. Photograph from a seated person's viewpoint, about thirty-five degrees above the desk and slightly behind the camera, so the top plate, front-left shoulder, and rear film door can all be seen. Put the camera near the center-left, angled diagonally from lower-left to upper-right. Use a normal phone-camera focal length with a little edge softness; do not use a product-photo turntable or perfectly symmetrical composition. Scene and required details: Show a black-and-silver mechanical 35mm SLR with brassed corners, a cracked leatherette patch, a scratched manual-focus lens, a fabric strap repaired with black thread, fingerprints on the metal top plate, and a small dent near the rewind crank. Place two curled contact sheets, a strip of six developed negatives in a translucent sleeve, a red grease pencil, cotton gloves, handwritten exposure calculations that are not readable, an inexpensive desk lamp, and a chipped enamel mug nearby. The desk surface is cheap wood-grain laminate with chemistry stains and tape residue. Required readable text: The engraved equipment label DF-2 must be clearly readable once on the camera's top plate. A small worn white tape sticker on the rear film door must show the handwritten numerals 2023 exactly once. DF-2 and 2023 are the only readable text. All notes, contact-sheet markings, and packaging must remain illegible scribbles or be turned away from the camera. Continuity: This camera is the physical object remembered by photography-club members and used to prove that Shen Zhi remained active after the system claimed she had left. It should feel personally used and recently handled. Keep the modest dormitory context consistent with a student life, without visual clues suggesting wealth, professional studio ownership, or abandonment for many years. Lighting and image defects: One warm practical desk lamp from the upper-left, weak cool spill from an unseen computer monitor, realistic mixed white balance, shallow but not extreme depth of field, subtle phone sensor noise, and soft reflections on scratched metal. Preserve detail in the DF-2 engraving and 2023 sticker while keeping the rest naturally imperfect. Do not include: No digital camera screen, no modern mirrorless body, no famous real-world brand logo, no pristine collector condition, no elaborate darkroom laboratory, no person or hand, no portrait photograph of Shen Zhi, no supernatural shadow, no blood, no neon, no cyberpunk styling, no decorative flowers, no commercial product lighting, no random readable words, and no duplicated labels. Output requirements: Produce one believable 800x600 phone photograph with no caption, no border, no watermark, and no generated UI. It must look like a file a student quickly sent through a messenger app for evidence review. Shared visual style: muted colors, early-2000s Chinese internet aesthetic, slightly low-res, candid documentary realism, no futuristic neon."
+    },
+    {
+      "id": "art_lanpu_corridor",
+      "usage": "兰圃楼凌晨走廊",
+      "size": "1280x720",
+      "prompt": "Purpose and medium: Create a fixed surveillance-camera still of an empty university laboratory corridor in China at 2:00 AM. The image is environmental evidence for a repeating access-log anomaly. The unease must come from institutional emptiness and exact timing, while every visible object remains ordinary and explainable. Camera and composition: Landscape 16:9 frame at 1280 by 720 pixels from a fixed high corner surveillance camera mounted near the ceiling at the near-left end of the corridor. Use a wide but believable security-camera lens looking diagonally down the hallway. The floor lines converge toward a dark fire door at the far end. About two-thirds down the corridor, show the scratched gray laboratory door on the right wall with the small N17 access reader beside it. Include a thin strip of ceiling in the upper frame and a broad empty floor area below. Scene and required details: Use aging blue-gray paint on the lower walls, dirty off-white paint above, speckled institutional tiles, exposed cable conduit, long fluorescent fixtures, a glass-front fire cabinet, two closed laboratory doors, a mop bucket parked far from the N17 door, and a wall clock whose face is too small to read. The N17 reader should be visible as the same yellowed rectangular device from art_gate_n17.png, but it is distant and not the visual center. Every door is closed. The corridor is completely still. Required readable text: No human-readable text is required. The tiny N17 label may exist as a small visual mark but must be too distant to read cleanly. Do not invent department names, safety slogans, exit text, timestamps, camera IDs, subtitles, watermarks, or digital recording overlays. Continuity: This wide image must match art_gate_n17.png: the N17 reader is mounted on the right side of the same scratched gray laboratory door, and the corridor extends left from the close-up viewpoint. Use the same blue-gray walls, off-white upper section, speckled floor, old fluorescent fixtures, and repaired cable conduit. There must be no human figure anywhere in the corridor, including reflections or distant silhouettes. Lighting and image defects: Cold fluorescent illumination with one tube near the far end slightly dimmer than the others, mild green cast, lifted black levels, low dynamic range, corner vignetting, blocky H.264 compression, faint horizontal sensor noise, and a small overexposed strip under the nearest fixture. Keep the view readable; do not hide the corridor in darkness or add theatrical beams. Do not include: No human figure, no shadow person, no face, no ghost, no reflection shaped like a person, no open door, no blood, no fog, no smoke, no emergency red light, no flickering supernatural glow, no cyberpunk architecture, no futuristic display, no dramatic cinematic grading, no Dutch angle beyond the fixed mounting, no camera timestamp, and no random readable text. Output requirements: Produce one authentic 1280x720 low-bitrate surveillance still with no external caption, no border, no interface frame, and no decorative grain layer. It should feel like a frame exported from an inexpensive campus CCTV recorder. Shared visual style: muted colors, early-2000s Chinese internet aesthetic, slightly low-res, candid documentary realism, no futuristic neon."
+    }
+  ],
+  "complianceCheck": {
+    "noRealExploit": "所有网络操作使用虚构地址、虚构锁层和不可迁移到现实环境的命令结果。",
+    "crimeHasCost": "涉案人员与机构在后续案件中进入警方调查和司法程序。",
+    "playerNotGlorified": "越界访问累计污点，并在最终自首情节中承担责任。",
+    "horrorBounded": "无血腥猎奇，每关至多一次可降级或关闭的跳吓。",
+    "allFictional": "人物、学校、平台、企业与城市系统均为架空设定。"
+  }
+}

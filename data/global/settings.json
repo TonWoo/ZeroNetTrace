@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "themes": [
+    "mono",
+    "green",
+    "amber"
+  ],
+  "horrorIntensities": [
+    "full",
+    "reduced",
+    "off"
+  ],
+  "hintThresholdSeconds": [
+    360,
+    720,
+    1080
+  ],
+  "designResolution": [
+    1600,
+    900
+  ]
+}

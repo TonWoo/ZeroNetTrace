@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/apps/viewer_app.gd" id="1"]
+
+[node name="ViewerApp" type="PanelContainer"]
+offset_left = 700.0
+offset_top = 60.0
+offset_right = 1560.0
+offset_bottom = 820.0
+script = ExtResource("1")
+app_title = "查看器 // FORENSIC"
+app_id = "viewer"
+

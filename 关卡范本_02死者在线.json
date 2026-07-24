@@ -1,0 +1,208 @@
+// ============================================================================
+// 《零网寻踪》关卡范本 v2 —— 第 02 关「死者在线」
+// ----------------------------------------------------------------------------
+// 用途:给【关卡设计 Agent】与【叙事 Agent】的标准范本,其余关卡照此结构产出。
+// 注释是给 Agent 的说明;落地时导出为纯 JSON。
+// v2 相比 v1 范本的结构变化:
+//   - 删除 entities/keyDeduction(线索板图匹配已废弃)
+//   - 新增 network(终端渗透的节点拓扑,Hacknet 式)
+//   - 新增 knowledgeGates(玩家必须自己想到并亲手输入的答案)
+//   - 新增 horrorEvents(恐怖层编排)与 caseReport(结案选择题)
+//   - 新增 contentManifest(必须写成全文的内容清单,反糊弄军规)
+//   - 新增 artAssets(图片留白 + AI 生图 Prompt)
+// 厚度标准:调查线 3~5 条、反转 ≥2、恐怖事件 2~3 + jumpscare ≤1、可玩 45~70 分钟。
+// ============================================================================
+{
+  "caseId": "case_02_dead_streamer",
+  "title": "死者在线",
+  "order": 2,
+  "estimatedMinutes": 60,
+
+  // —— 委托与钩子 ——
+  "hook": {
+    "from": "苏晚(死者的妹妹)",
+    "trigger": "通讯器上的陌生求助:哥哥苏野是小有名气的游戏主播『渡鸦』,三个月前深夜坠楼,警方结案为失足。可他的账号至今还在准点发动态、还会给她的照片点赞。昨晚 23:47,这个账号开播了 47 秒——画面里,是哥哥的房间。",
+    "playerGoal": "查清一个死了三个月的人,是谁在替他活着。"
+  },
+  "coreQuestion": "『渡鸦』账号背后现在是谁?那 47 秒直播是在哪里、被谁拍下的?",
+
+  // —— 登场人物(仅供叙事口吻统一,不生成任何卡片)——
+  "cast": [
+    { "id": "su_wan",  "name": "苏晚",   "role": "委托人。急、自责、深夜才敢联系你。打字快,常连发。" },
+    { "id": "su_ye",   "name": "苏野/渡鸦", "role": "死者。独居主播,笑点低,口头禅『稳喔』,发帖爱用『喔』结尾。" },
+    { "id": "broker",  "name": "『长明』", "role": "数字遗产回收商,表面做『账号纪念馆』,实为账号农场中介。" },
+    { "id": "actor7",  "name": "7号扮演者", "role": "农场雇员,职业是『扮演死者』。只在最后露出冰山一角。" }
+  ],
+
+  // —— 网络拓扑:终端玩法的骨架。每个节点都有真实的文件系统 ——
+  // files 里给出的内容是【成文示范】;正式产出时每个文件都要这样写完,禁止占位。
+  "network": [
+    {
+      "addr": "raven.zhibo-lan.cn",
+      "label": "渡鸦的直播间主页(浏览器可访问)",
+      "defense": "无(公开网页)",
+      "note": "入口。动态列表要做全:死前 30 条 + 死后 90 条,文风差异就是第一条线索。"
+    },
+    {
+      "addr": "10.24.7.115",
+      "label": "苏野家里的旧 NAS(苏晚提供了地址,但不知道密码)",
+      "defense": "登录锁(需密码,crack 无效)→ 知识门 kg_nas_password",
+      "files": [
+        { "path": "/video/直播回放_0402.mp4", "type": "video", "note": "生前正常直播,用来让玩家熟悉苏野本人的语气与房间原貌" },
+        { "path": "/docs/合同扫描件.pdf", "type": "doc",
+          "content": "《数字资产托管协议》甲方:苏野 乙方:长明网络科技工作室。乙方于甲方身故后取得下列账号之运营权……第七条:乙方承诺账号仅用于『纪念性维护』。签署日期:死前 41 天。—— ★中层真相:账号是他自己签出去的。" },
+        { "path": "/notes/记账.txt", "type": "text",
+          "content": "3月 平台分成 -62%…房租 4200…给晚晚学费转了 8000…长明那边说签了能预支两万,先撑过这季度喔" }
+      ]
+    },
+    {
+      "addr": "edge-cdn.zhibo-lan.cn",
+      "label": "直播平台边缘服务器(存有那 47 秒的原始推流)",
+      "defense": "两道锁,crack 可破;入侵时触发反向追踪(120 秒)",
+      "files": [
+        { "path": "/streams/raven_47s.flv", "type": "video", "note": "本关核心物证。查看器里可逐帧,第 39 帧触发 jumpscare(见 horrorEvents)" },
+        { "path": "/logs/ingest.log", "type": "log",
+          "note": "要写成 40+ 行真实推流日志。关键行示范如下,混在噪音行里让玩家自己比对:",
+          "content": "23:47:02 INGEST start channel=raven encoder=OBS28.1 ip=172.19.240.66\n23:47:49 INGEST stop  channel=raven duration=47s\n—— 苏野生前所有开播记录的 ip 都是家里宽带,encoder 是 OBS26.4。这次两个都不一样。" }
+      ]
+    },
+    {
+      "addr": "changming-mem.cn",
+      "label": "『长明·数字纪念馆』官网 + 内部工单系统",
+      "defense": "官网公开;工单系统需员工凭证 → 知识门 kg_changming_login",
+      "files": [
+        { "path": "/tickets/RAVEN-0339.txt", "type": "text",
+          "content": "客户投诉:raven 频道粉丝质疑『纪念动态』文风不像本人。处理:已调整文案模型词频(『喔』→『哦』修正,反向)。备注:该账号已升级为『活性维护』套餐,勿降级,买方要求保持活跃度评级。—— ★指向:有人花钱要这个账号『活着』。" },
+        { "path": "/internal/排班表_0715.csv", "type": "sheet",
+          "content": "要写成 20+ 行排班数据。关键行:7号扮演者,7月14日 23:00-00:30,棚B(渡鸦布景),实景直播·47秒·验证用" }
+      ]
+    },
+    {
+      "addr": "172.19.240.66",
+      "label": "农场『棚区』内网(终局节点)",
+      "defense": "三道锁 + 全程反向追踪(90 秒),本关最难渗透",
+      "files": [
+        { "path": "/roster/身份池.db", "type": "db",
+          "note": "暗线碎片所在。买方列表要做成 30+ 行,其中一行的经办标记是 REN-0" }
+      ]
+    }
+  ],
+
+  // —— 知识门:必须玩家自己想到、亲手输入的东西(探案的灵魂)——
+  // accept 为合法答案集合(含容错写法)。hints 是三级提示文案(线人苏晚发短信),绝不直接给答案。
+  "knowledgeGates": [
+    {
+      "id": "kg_nas_password",
+      "where": "10.24.7.115 登录",
+      "howPlayerFigures": "苏野生前动态里晒过猫(『馒头三岁了喔』,配图),置顶动态里有他纪念开播三周年的日期 0713。玩家自己拼出 mantou0713。",
+      "accept": ["mantou0713", "MANTOU0713", "馒头0713"],
+      "hints": [
+        "我哥密码从来记不住,都用馒头……啊,馒头是他的猫",
+        "他什么纪念日都设成密码,你翻翻他置顶那条动态",
+        "猫名拼音加上那个日期,试试"
+      ]
+    },
+    {
+      "id": "kg_search_changming",
+      "where": "搜索引擎自由输入",
+      "howPlayerFigures": "NAS 合同里出现『长明网络科技工作室』。玩家自己想到把它丢进搜索引擎 → 命中官网、一条离职员工的匿名爆料帖(『我们管那叫养号,不叫纪念』)、一条工商信息。",
+      "accept": ["长明", "长明网络科技", "changming", "数字纪念馆"],
+      "hints": ["合同乙方那个名字,你查过吗?", "搜索引擎不只能搜人名,公司也能搜", "搜『长明』,翻到第二页"]
+    },
+    {
+      "id": "kg_changming_login",
+      "where": "changming-mem.cn 工单系统登录",
+      "howPlayerFigures": "爆料帖楼主提到自己工号 CM-041 没被注销、密码是入职月份+全拼默认没改过;帖子签名档里有入职纪念日。玩家拼出凭证。",
+      "accept": [{ "user": "CM-041", "pass": "202303changming" }],
+      "hints": ["那个爆料的前员工,话说得比他以为的多", "他连工号都写出来了,默认密码规则也写了", "入职年月+公司全拼,他那种人不会改密码的"]
+    }
+  ],
+
+  // —— 调查线:3~5 条,可交叉推进。每条 = 终端渗透与知识门探案交替 ——
+  "investigationLines": [
+    { "id": "L1", "title": "文风尸检", "beats": "通读死后 90 条动态 → 玩家自己发现『喔→哦』的词频变化与发帖时间从深夜漂移到准点整点(脚本特征)→ 在笔记本里记下分界日期,恰好是死后第 3 天。" },
+    { "id": "L2", "title": "进他的家", "beats": "kg_nas_password 开 NAS → 合同扫描件:账号是苏野生前自己签给『长明』的 → 反转1成立。记账 txt 补足动机(给妹妹凑学费),叙事重量在这里。" },
+    { "id": "L3", "title": "47 秒", "beats": "crack 边缘服务器(首次反向追踪压力)→ 拿 raven_47s.flv 与 ingest.log → 比对生前开播记录:IP 与推流软件都不对 → 直播不是从苏野家发出的。逐帧看视频:房间 1:1 复刻但镜子位置反了 → 第 39 帧 jumpscare。" },
+    { "id": "L4", "title": "长明的柜台底下", "beats": "kg_search_changming → 爆料帖 → kg_changming_login 进工单系统 → 工单 RAVEN-0339 + 排班表:『7号扮演者』『棚B(渡鸦布景)』→ 反转2成立:47 秒是真人扮演的『活性验证』。" },
+    { "id": "L5", "title": "谁在买死人(终局)", "beats": "从排班表定位棚区内网 172.19.240.66 → 最难渗透 → 身份池.db:死者账号被批量卖给需要『活人证明』的买家,一行经办标记 REN-0 → 暗线碎片落袋。" }
+  ],
+
+  // —— 反转(≥2)——
+  "twists": [
+    "反转1:账号没有被盗——是苏野生前为了给妹妹凑学费,亲手把『死后的自己』签给了长明。",
+    "反转2:那 47 秒不是灵异也不是录像,是农场雇的『扮演者』在 1:1 布景棚里演的——为了向买家证明这个身份『还活着』。",
+    "余味(不摊开,留给暗线):买一个死人身份的人,是些什么人?——是被系统『优化』掉、需要新身份才能活下去的人。"
+  ],
+
+  // —— 恐怖事件编排(A 级环境异化由引擎全局调度,这里只写 B/C 级)——
+  "horrorEvents": [
+    { "id": "h1", "level": "B", "trigger": "玩家通读死后动态超过 2 分钟", "effect": "『渡鸦』账号此刻发出一条新动态:『今天也有人在看我喔』。发布时间就是现在。" },
+    { "id": "h2", "level": "B", "trigger": "拿到 raven_47s.flv 之后首次回到桌面", "effect": "通讯器收到来自『渡鸦』的私信:『别帮她查了。她已经习惯我了。』随后该会话消失,通讯器里查无此人。" },
+    { "id": "h3", "level": "C(jumpscare,本关唯一)", "trigger": "查看器逐帧播放 raven_47s.flv 至第 39 帧", "effect": "镜子反射里的『苏野』猛然转头直视镜头(闪帧 0.4 秒,冷 sting,随后 5 秒完全静默)。恐怖强度『减弱』档下改为:画面定格,镜中人已转头,无闪帧无 sting。", "afterBeat": "静默后苏晚来消息:『你还在吗?』——喘息段,顺势引导玩家整理笔记。" },
+    { "id": "h4", "level": "B", "trigger": "棚区内网渗透时追踪条到 60%", "effect": "终端里被插入一行不是玩家输入的命令:`trace 陈默` 及其真实进度条。断开后桌面壁纸左下角多了一个极小的红点,本关内不再消失。" }
+  ],
+
+  // —— 结案报告:3~5 道单选题,认真玩过就能全对 ——
+  "caseReport": [
+    { "q": "『渡鸦』账号死后一直在更新,最初是谁在操作?",
+      "options": ["盗号的黑客", "长明工作室的文案脚本", "苏野本人未死", "平台官方纪念机制"], "answer": 1,
+      "evidence": "合同扫描件.pdf / 工单 RAVEN-0339" },
+    { "q": "账号运营权是怎么落到长明手里的?",
+      "options": ["死后家属转让", "苏野生前自己签的托管协议", "长明伪造合同", "平台拍卖"], "answer": 1,
+      "evidence": "合同扫描件.pdf / 记账.txt" },
+    { "q": "那 47 秒直播是从哪里推流的?",
+      "options": ["苏野家中", "苏晚家中", "长明的布景棚 B", "海外服务器"], "answer": 2,
+      "evidence": "ingest.log 的 IP 与推流软件差异 / 排班表_0715.csv" },
+    { "q": "画面里的『苏野』是什么?",
+      "options": ["AI 换脸视频", "生前录像重播", "真人扮演者", "苏野的双胞胎"], "answer": 2,
+      "evidence": "排班表『7号扮演者·实景直播·验证用』/ 第 39 帧" },
+    { "q": "长明把这些『活着的死人账号』卖给谁?",
+      "options": ["广告商刷量", "需要『活人证明』新身份的人", "游戏工作室", "粉丝私人收藏"], "answer": 1,
+      "evidence": "身份池.db" }
+  ],
+
+  // —— 结案与暗线 ——
+  "resolution": {
+    "surfaceTruth": "没有鬼。有的是一个想在死后继续给妹妹交学费的哥哥,和一条把死者尊严批发出售的产业链。",
+    "clientOutcome": "你把合同和记账 txt 发给苏晚。她很久没回,最后只说:『原来他到最后都在管我。』账号由她接回,发了最后一条动态后永久停更。",
+    "darklineFragment": {
+      "id": "frag_identity_pool",
+      "content": "身份池买方名单里,每一个买家都是在零网上『查无此人』的活人。经办标记:REN-0。被系统抹掉的人,需要死人的名字才能继续活着。",
+      "linksToPreviousCase": "case_01_deleted_reviews(REN-0 的平台权限)",
+      "foreshadows": "case_03_water_meter"
+    }
+  },
+
+  // —— 反糊弄军规:本关必须写成全文的内容清单(叙事 Agent 逐项交付)——
+  "contentManifest": [
+    "渡鸦动态:死前 30 条(深夜、带『喔』、有真人废话)+ 死后 90 条(准点、『哦』、模板味),全部成文",
+    "raven 直播间页:粉丝评论区 ≥ 40 条(质疑派/怀念派/起哄派吵起来)",
+    "苏晚全程聊天:≥ 60 条往返,含三级提示台词,口吻按 cast 设定",
+    "NAS 三个文件全文(合同逐条、记账整年、直播回放的对话文字稿)",
+    "ingest.log ≥ 40 行 + 生前开播记录 ≥ 15 行(供比对)",
+    "搜索『长明』结果页 ≥ 5 条,爆料帖全文 + ≥ 8 层回复",
+    "工单系统:RAVEN-0339 全文 + 无关工单 ≥ 6 条(噪音也要真)",
+    "排班表 ≥ 20 行、身份池 ≥ 30 行"
+  ],
+
+  // —— 图片留白 + AI 生图 Prompt(登记进 assets/art_manifest.md)——
+  "artAssets": [
+    { "id": "art_raven_avatar", "usage": "渡鸦头像", "size": "256x256",
+      "prompt": "profile avatar of a young Chinese male game streamer, black hoodie, headphones around neck, slight tired smile, dim room lighting, webcam-quality photo, early-2000s Chinese internet aesthetic, slightly low-res" },
+    { "id": "art_cat_mantou", "usage": "动态配图:猫『馒头』", "size": "800x600",
+      "prompt": "candid low-quality phone photo of a chubby white cat on a cluttered desk beside a mechanical keyboard, night, warm desk lamp, motion blur, authentic amateur photography" },
+    { "id": "art_frame39", "usage": "第 39 帧 jumpscare 帧", "size": "1280x720",
+      "prompt": "dark bedroom seen through a low-bitrate webcam stream, a mirror in the background reflecting a standing man whose head is turned to face the camera directly, face slightly wrong, heavy video compression artifacts, VHS noise, unsettling liminal horror, no gore" },
+    { "id": "art_studio_b", "usage": "排班表附件:棚B照片", "size": "1024x768",
+      "prompt": "photo of a film studio set replicating an ordinary small bedroom in exact detail, visible stage lights and cables just outside the room's fake walls, uncanny, fluorescent lighting, documentary photography style" }
+  ],
+
+  // —— 合规红线(每关必过)——
+  "complianceCheck": {
+    "noRealExploit": "所有渗透只呈现虚构命令与结果,不出现可复现的真实攻击手段。",
+    "crimeHasCost": "长明工作室在第 06 关随大案被查处;结案文案明确其行为涉嫌违法。",
+    "playerNotGlorified": "玩家越界入侵均计入『污点』,为第 06 关自首埋线;h4 事件让玩家亲身体会被入侵的恐惧。",
+    "horrorBounded": "恐怖不涉血腥猎奇,jumpscare 每关 ≤1 且可在设置中减弱/关闭。",
+    "allFictional": "平台、公司、地名全部架空,不影射真实机构与真实事件。"
+  }
+}

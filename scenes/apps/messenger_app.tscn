@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/apps/messenger_app.gd" id="1"]
+
+[node name="MessengerApp" type="PanelContainer"]
+offset_left = 890.0
+offset_top = 300.0
+offset_right = 1550.0
+offset_bottom = 820.0
+script = ExtResource("1")
+app_title = "通讯器 // PING"
+app_id = "messenger"
+

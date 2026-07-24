@@ -1,0 +1,308 @@
+{
+  "caseId": "prologue_dead_mail",
+  "title": "序章：一封死人的邮件",
+  "order": 0,
+  "estimatedMinutes": 15,
+  "coreQuestion": "这封由死者账号送达的邮件从何而来，林薇真正留下了什么？",
+  "unlockRequirements": [],
+  "investigationLines": [
+    {
+      "id": "P-L1",
+      "title": "死者来信",
+      "beats": "阅读 03:17 邮件与附件错误码，确认投递发生在林薇死亡之后。"
+    },
+    {
+      "id": "P-L2",
+      "title": "零时镜像",
+      "beats": "把零时邮局与 MIRROR-17 组合搜索，扫描只读缓存并保存原始日志。"
+    }
+  ],
+  "twists": [
+    "邮件不是灵异现象，而是林薇生前设置并由停运镜像完成的延迟投递。"
+  ],
+  "hook": {
+    "from": "林薇",
+    "trigger": "葬礼后的凌晨 03:17，一封由死者账号签名的邮件抵达。",
+    "playerGoal": "找到邮件附件真正指向的缓存，并保存林薇留下的第一段日志。"
+  },
+  "defaultNoiseResults": [
+    {
+      "title": "零网城市服务状态",
+      "url": "status.zero.local",
+      "snippet": "公共服务节点运行正常，过去二十四小时共处理 28,041,392 次请求。"
+    },
+    {
+      "title": "旧站归档索引更新公告",
+      "url": "archive-index.zero",
+      "snippet": "一批 2021—2023 年的个人主页镜像完成迁移，部分链接仍会失效。"
+    },
+    {
+      "title": "怎样整理数字遗物",
+      "url": "life.bbs.zero/thread/8831",
+      "snippet": "网友讨论账号继承、照片备份和纪念页管理，观点互相矛盾。"
+    },
+    {
+      "title": "夜间网络延迟统计",
+      "url": "netwatch.zero/reports/night",
+      "snippet": "凌晨两点至四点的平均延迟上升 7%，原因仍在排查。"
+    },
+    {
+      "title": "搜索帮助：缩短句子通常更有效",
+      "url": "help.zerosou.local/query",
+      "snippet": "尝试人物名、机构名、设备编号或材料中反复出现的短语。"
+    }
+  ],
+  "network": [
+    {
+      "addr": "local.zero",
+      "label": "陈默的本地工作区",
+      "discoverWhen": {
+        "type": "start"
+      },
+      "defense": {
+        "mode": "public",
+        "layers": [],
+        "trace": {
+          "enabled": false
+        }
+      },
+      "files": [
+        {
+          "path": "/home/陈默/凌晨便签.txt",
+          "type": "text",
+          "content": "03:17。邮件来自林薇。她的葬礼是昨天。先把每一步记下来。",
+          "isEvidence": false
+        }
+      ]
+    },
+    {
+      "addr": "mirror17.deadletter.zero",
+      "label": "零时邮局 M-17 缓存",
+      "discoverWhen": {
+        "type": "gate",
+        "id": "kg_mirror_search"
+      },
+      "defense": {
+        "mode": "public",
+        "layers": [],
+        "trace": {
+          "enabled": false
+        }
+      },
+      "traceChain": [
+        "deadletter.zero",
+        "mirror-17",
+        "林薇的离线签名盒"
+      ],
+      "files": [
+        {
+          "path": "/archive/LW_最后一次校对.zlog",
+          "type": "doc",
+          "content": "陈默：如果你读到这里，说明我已经没机会当面解释。官方会把那晚写成一次普通事故，他们甚至会拿我最近失眠、加班和情绪不稳作证。别跟他们争，也别急着证明我聪明；先把原始记录留下。零网的审核历史会改，人的记忆也会被更体面的说法改掉。你要找的不是某个神秘凶手，而是那些修改从哪里开始、又被谁批准。第一步，从我的账号开始查。不要相信自动汇总页，只看时间戳、原始文件和互相对不上的那一行。还有，看到 REN-0 时先别声张。它不是用户名，更像一把被很多人用过的钥匙。最后一件事：查完之后去找警方，把你的访问记录一起交出去。我们都越过线，但越过线不等于可以假装没有代价。——林薇，02:13",
+          "isEvidence": true,
+          "evidenceId": "ev_linwei_log"
+        },
+        {
+          "path": "/meta/delivery.log",
+          "type": "log",
+          "content": "2026-07-14 00:00:00 DEADLETTER seq=0000 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:00:37 DEADLETTER seq=0001 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:01:14 DEADLETTER seq=0002 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:01:51 DEADLETTER seq=0003 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:02:28 DEADLETTER seq=0004 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:03:05 DEADLETTER seq=0005 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:03:42 DEADLETTER seq=0006 actor=svc_06 result=OK latency=96ms\n2026-07-21 02:13:00 DEADLETTER schedule sender=linwei recipient=chenmo deliver_at=2026-07-24T03:17:00 rule=MIRROR-17\n2026-07-14 00:04:56 DEADLETTER seq=0008 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:05:33 DEADLETTER seq=0009 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:06:10 DEADLETTER seq=0010 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:06:47 DEADLETTER seq=0011 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:07:24 DEADLETTER seq=0012 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:08:01 DEADLETTER seq=0013 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:08:38 DEADLETTER seq=0014 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:09:15 DEADLETTER seq=0015 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:09:52 DEADLETTER seq=0016 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:10:29 DEADLETTER seq=0017 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:11:06 DEADLETTER seq=0018 actor=svc_04 result=OK latency=70ms\n2026-07-24 03:17:00 DEADLETTER delivered sender=linwei recipient=chenmo status=SIGNED_BY_DECEASED_ACCOUNT\n2026-07-14 00:12:20 DEADLETTER seq=0020 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:12:57 DEADLETTER seq=0021 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:13:34 DEADLETTER seq=0022 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:14:11 DEADLETTER seq=0023 actor=svc_02 result=OK latency=44ms",
+          "isEvidence": true,
+          "evidenceId": "ev_delivery_log"
+        }
+      ]
+    }
+  ],
+  "knowledgeGates": [
+    {
+      "id": "kg_mirror_search",
+      "channel": "search",
+      "where": "零索自由搜索",
+      "howPlayerFigures": "邮件正文把『零时邮局』写成旧称，附件错误码只显示 MIRROR-17；玩家组合两段信息。",
+      "accept": [
+        "零时邮局 mirror17",
+        "零时邮局 mirror-17",
+        "零时邮局 m17"
+      ],
+      "aliases": [
+        "mirror17 零时邮局",
+        "mirror-17 deadletter",
+        "零时邮局17"
+      ],
+      "hints": [
+        "附件报错不是乱码，它像一个旧服务编号。",
+        "邮件里提到的旧邮局，和附件上的 MIRROR-17 也许属于同一件事。",
+        "把『零时邮局』和『MIRROR-17』一起放进搜索框。"
+      ],
+      "unlockEffects": [
+        {
+          "type": "reveal_node",
+          "target": "mirror17.deadletter.zero"
+        }
+      ]
+    }
+  ],
+  "sites": [
+    {
+      "id": "site_mirror_search",
+      "gateId": "kg_mirror_search",
+      "addresses": [
+        "零时邮局 mirror17",
+        "archive.deadletter.zero/mirror17"
+      ],
+      "skin": "search",
+      "title": "零索：零时邮局 MIRROR-17",
+      "subtitle": "找到 5 条缓存结果，其中一条仍回应终端探测。",
+      "results": [
+        {
+          "title": "零时邮局服务停止公告",
+          "url": "archive.deadletter.zero/notices/2024-09",
+          "snippet": "该服务曾为用户提供延迟投递与离线签名，MIRROR-17 为第十七号缓存镜像。"
+        },
+        {
+          "title": "MIRROR 系列错误码说明",
+          "url": "kb.oldnet.zero/mirror-codes",
+          "snippet": "MIRROR-17 表示主站已停运但镜像仍保存一次只读副本。"
+        },
+        {
+          "title": "有人还在用零时邮局吗",
+          "url": "sleepers.bbs.zero/thread/1172",
+          "snippet": "最后回复停在两年前：别把遗书交给会自动续费的服务。"
+        },
+        {
+          "title": "延迟邮件与数字遗嘱的区别",
+          "url": "lawtalk.zero/archive/441",
+          "snippet": "文章讨论定时邮件不等同正式遗嘱，签名记录仍可能作为时间证据。"
+        },
+        {
+          "title": "mirror17.deadletter.zero 状态快照",
+          "url": "cachewatch.zero/host/mirror17",
+          "snippet": "最近一次响应：03:17；协议标记：READ-ONLY。"
+        }
+      ]
+    }
+  ],
+  "mails": [
+    {
+      "subject": "如果你还醒着，就从这里开始",
+      "from": "林薇 <linwei@deadletter.zero>",
+      "time": "2026-07-24 03:17",
+      "body": "陈默，收到这封信的时候，我大概已经被写进一份很短的事故通报里了。你先别去质问任何人，也别把附件直接转发。它经过一个叫『零时邮局』的旧服务，我把真正的日志放在那边的镜像里，附件只会留下一个编号。你总说我记东西像做审计，这次就按审计的办法来：看原始时间、看签名、看谁有权改动。找到以后，把它复制到本地证据目录。还有，任何时候觉得对方开始注意你，先断开。活着比逞强重要。",
+      "signature": "林薇 / 延迟投递编号 DL-0317",
+      "attachments": [
+        {
+          "name": "LW_最后一次校对.zlog.link",
+          "path": "/mail/LW_最后一次校对.zlog.link",
+          "type": "doc",
+          "content": "附件解析失败。缓存代号：MIRROR-17。主站地址已失效。",
+          "assetId": "art_deadletter_stamp",
+          "description": "带有旧邮局戳记的错误页"
+        }
+      ]
+    },
+    {
+      "subject": "系统回执：延迟投递已完成",
+      "from": "零时邮局自动回执 <no-reply@deadletter.zero>",
+      "time": "2026-07-24 03:17",
+      "body": "本邮件由停运服务的只读镜像自动发送。投递任务创建于 2026 年 7 月 21 日 02:13，签名账号为 linwei，接收账号为 chenmo。主站停运后，任务内容由 MIRROR-17 缓存保留，缓存只允许读取一次完整正文，但元数据可能继续存在。若收件人需要核对签名，请保留原始投递日志与附件头，不要使用截图代替原文件。此回执不代表平台对正文真实性作出保证。",
+      "signature": "DEADLETTER M-17 / 自动签名",
+      "attachments": []
+    }
+  ],
+  "conversations": [],
+  "horrorEvents": [
+    {
+      "id": "prologue_future_timestamp",
+      "level": "B",
+      "trigger": {
+        "type": "evidence_collected",
+        "target": "ev_linwei_log"
+      },
+      "once": true,
+      "variants": {
+        "full": {
+          "text": "邮件时间戳变成了明天。终端自行写下：别信官方结论。"
+        },
+        "reduced": {
+          "text": "邮件时间戳显示为明天，随后恢复。"
+        },
+        "off": {
+          "text": ""
+        }
+      }
+    }
+  ],
+  "caseReport": [
+    {
+      "id": "p_q1",
+      "q": "林薇要求你优先保存什么？",
+      "options": [
+        "事故新闻截图",
+        "原始记录与时间戳",
+        "她的社交头像",
+        "葬礼名单"
+      ],
+      "answer": 1,
+      "evidence": [
+        "ev_linwei_log"
+      ]
+    },
+    {
+      "id": "p_q2",
+      "q": "MIRROR-17 是什么？",
+      "options": [
+        "破解器",
+        "直播间编号",
+        "停运邮局的只读缓存",
+        "警方档案号"
+      ],
+      "answer": 2,
+      "evidence": [
+        "ev_delivery_log"
+      ]
+    },
+    {
+      "id": "p_q3",
+      "q": "林薇留下的第一条调查指令是什么？",
+      "options": [
+        "追查医院",
+        "联系记者",
+        "从她的账号开始查",
+        "删除全部邮件"
+      ],
+      "answer": 2,
+      "evidence": [
+        "ev_linwei_log"
+      ]
+    }
+  ],
+  "resolution": {
+    "surfaceTruth": "这不是死者复活，而是一封在她死亡前安排好的延迟邮件。",
+    "clientOutcome": "陈默保存了原始日志，第一次在自己的笔记里写下 REN-0。",
+    "darklineFragment": {
+      "id": "frag_ren0_name",
+      "content": "REN-0 不是用户名，更像一把被很多人用过的钥匙。"
+    }
+  },
+  "contentManifest": [
+    "林薇剧情邮件全文",
+    "零时邮局回执全文",
+    "延迟投递日志 24 行",
+    "搜索结果 5 条",
+    "林薇加密日志全文"
+  ],
+  "artAssets": [
+    {
+      "id": "art_deadletter_stamp",
+      "usage": "序章附件错误页的旧邮局戳记",
+      "size": "960x540",
+      "prompt": "Purpose and medium: Create a forensic attachment image for a desktop investigation game: a flatbed scan of a physical A4 error report printed by a defunct early-2000s Chinese delayed-email service. It must look like mundane office evidence recovered from an obsolete system, not like a website screenshot, cinematic prop, occult document, or designed horror poster. Camera and composition: Landscape 16:9 crop at 960 by 540 pixels. The off-white sheet fills roughly eighty-five percent of the frame and is rotated less than two degrees clockwise. Show the entire lower-right corner and most of the top edge. Keep the camera perfectly perpendicular like a flatbed scanner; no perspective-heavy desk photograph, no hands, and no envelope. Place the important faded service stamp in the lower-right quadrant, large enough to inspect but not centered like a logo. Scene and required details: Use thin gray monospaced printer rows, an obsolete form header, faint horizontal rules, two old staple holes near the upper-left corner, toner dropout, one vertical scanner streak, a soft fold across the lower third, and slightly darkened paper edges. The stamp should resemble an uneven thermal-receipt or rubber-service stamp with incomplete ink transfer. The surrounding metadata should suggest sender, recipient, scheduled delivery, and mirror routing through layout only; keep those minor rows too degraded to read. The paper must feel handled, archived, and rescanned several times. Required readable text: The only fully readable text in the entire image must be the exact uppercase Latin string MIRROR-17, including the hyphen. Render MIRROR-17 once inside the faded lower-right stamp. All other printed rows must be authentic-looking but too blurred, clipped, or faded to decipher. Do not invent Chinese characters, dates, email addresses, logos, signatures, serial numbers, or extra English words. Continuity: This is the physical-looking attachment that leads the player to search for MIRROR-17. Nothing in the image should prove a supernatural explanation; it should support the later discovery that the message came from an old read-only mail mirror. Preserve a restrained bureaucratic tone so it can coexist with the game's monochrome terminal and early-internet archive pages. Lighting and image defects: Neutral gray flatbed-scanner illumination with no cast shadow, weak contrast, uneven toner density, subtle paper fibers, light JPEG ringing around dark characters, and a narrow band of overexposure along one edge. Avoid dramatic spotlighting. The degraded scan should remain legible enough to identify the single required stamp without looking artificially distressed. Do not include: No blood, skulls, ghosts, hands, candles, red wax seals, cyberpunk symbols, neon green code, holograms, modern smartphone UI, browser chrome, glossy graphic design, centered title card, decorative border, cinematic depth of field, random readable text, watermark, image-generation signature, or duplicate MIRROR-17 stamp. Output requirements: Produce one finished 960x540 raster image with no external caption, no mockup frame, no margin added by the generator, and no text outside the scanned sheet. Favor documentary plausibility and subtle evidence details over visual drama. Shared visual style: muted colors, early-2000s Chinese internet aesthetic, slightly low-res, candid documentary realism, no futuristic neon."
+    }
+  ],
+  "complianceCheck": {
+    "noRealExploit": "所有网络操作使用虚构地址、虚构锁层和不可迁移到现实环境的命令结果。",
+    "crimeHasCost": "涉案人员与机构在后续案件中进入警方调查和司法程序。",
+    "playerNotGlorified": "越界访问累计污点，并在最终自首情节中承担责任。",
+    "horrorBounded": "无血腥猎奇，每关至多一次可降级或关闭的跳吓。",
+    "allFictional": "人物、学校、平台、企业与城市系统均为架空设定。"
+  }
+}

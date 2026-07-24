@@ -1,0 +1,2873 @@
+{
+  "caseId": "case_02_dead_streamer",
+  "title": "02：死者在线",
+  "order": 2,
+  "estimatedMinutes": 60,
+  "coreQuestion": "渡鸦账号背后现在是谁，那 47 秒直播在哪里、由谁拍下？",
+  "unlockRequirements": [
+    "case_01_gate_2am"
+  ],
+  "investigationLines": [
+    {
+      "id": "C2-L1",
+      "title": "文风尸检",
+      "beats": "通读生前与死后动态，识别喔到哦、深夜到整点的文风和时间漂移。"
+    },
+    {
+      "id": "C2-L2",
+      "title": "进他的家",
+      "beats": "从猫名与周年日期拼出 NAS 凭证，取得合同、记账和生前回放。"
+    },
+    {
+      "id": "C2-L3",
+      "title": "四十七秒",
+      "beats": "渗透边缘服务器，在反追踪压力下取得原始推流、日志与历史记录并逐格查看。"
+    },
+    {
+      "id": "C2-L4",
+      "title": "长明柜台底下",
+      "beats": "搜索合同乙方，沿爆料帖拼出员工凭证，进入工单和排班系统。"
+    },
+    {
+      "id": "C2-L5",
+      "title": "谁在买死人",
+      "beats": "从排班定位棚区内网，取得身份池与 REN-0 经办标记。"
+    }
+  ],
+  "twists": [
+    "账号没有被盗；苏野为妹妹预支学费，生前亲手签出了死后的账号运营权。",
+    "47 秒直播不是录像或灵异；长明雇真人在一比一布景棚中进行活性验证。",
+    "购买死者身份的人同样是零网上查无此人的活人，产业链把两类受害者绑在一起。"
+  ],
+  "hook": {
+    "from": "苏晚",
+    "trigger": "坠楼死亡三个月的主播渡鸦仍准点更新，昨晚又从他的房间开播 47 秒。",
+    "playerGoal": "查清账号现在由谁操纵，以及那 47 秒直播从哪里拍摄。"
+  },
+  "defaultNoiseResults": [
+    {
+      "title": "零网城市服务状态",
+      "url": "status.zero.local",
+      "snippet": "公共服务节点运行正常，过去二十四小时共处理 28,041,392 次请求。"
+    },
+    {
+      "title": "旧站归档索引更新公告",
+      "url": "archive-index.zero",
+      "snippet": "一批 2021—2023 年的个人主页镜像完成迁移，部分链接仍会失效。"
+    },
+    {
+      "title": "怎样整理数字遗物",
+      "url": "life.bbs.zero/thread/8831",
+      "snippet": "网友讨论账号继承、照片备份和纪念页管理，观点互相矛盾。"
+    },
+    {
+      "title": "夜间网络延迟统计",
+      "url": "netwatch.zero/reports/night",
+      "snippet": "凌晨两点至四点的平均延迟上升 7%，原因仍在排查。"
+    },
+    {
+      "title": "搜索帮助：缩短句子通常更有效",
+      "url": "help.zerosou.local/query",
+      "snippet": "尝试人物名、机构名、设备编号或材料中反复出现的短语。"
+    }
+  ],
+  "network": [
+    {
+      "addr": "raven.zhibo-lan.cn",
+      "label": "渡鸦直播间公开页",
+      "discoverWhen": {
+        "type": "start"
+      },
+      "defense": {
+        "mode": "public",
+        "layers": [],
+        "trace": {
+          "enabled": false
+        }
+      },
+      "files": [
+        {
+          "path": "/public/style_diff.txt",
+          "type": "text",
+          "content": "生前动态 30 条：深夜发布、常用『喔』、时间不规则。死后动态 90 条：整点发布、改用『哦』、句式重复。分界发生在死亡后第三天。",
+          "isEvidence": true,
+          "evidenceId": "ev_style_diff"
+        }
+      ]
+    },
+    {
+      "addr": "10.24.7.115",
+      "label": "苏野家里的旧 NAS",
+      "discoverWhen": {
+        "type": "start"
+      },
+      "defense": {
+        "mode": "credential",
+        "credentialGateId": "kg_nas_password",
+        "layers": [],
+        "trace": {
+          "enabled": false
+        }
+      },
+      "files": [
+        {
+          "path": "/video/直播回放_0402.mp4",
+          "type": "video",
+          "content": "00:00 画面从黑场亮起，右下角出现渡鸦频道旧水印。\n00:01 自动曝光抬高，房间中央的椅子空着。\n00:02 桌面机械键盘灯未亮，只有显示器待机灯。\n00:03 窗帘没有摆动，环境里有持续空调声。\n00:04 镜子位于画面右侧，与四月回放中的左侧位置相反。\n00:05 画面压缩出现第一轮色块。\n00:06 门外传来一次金属碰撞。\n00:07 一个穿黑色连帽衫的人从左边进入。\n00:08 人物背对摄像头，身形接近苏野但肩线更窄。\n00:09 人物扶正椅背，没有说话。\n00:10 桌面上的猫抓痕是印刷贴纸。\n00:11 人物坐下，耳机仍挂在桌边。\n00:12 镜中反射比人物动作慢约半秒。\n00:13 人物抬手，镜中手臂没有同步抬起。\n00:14 推流码率下降，脸部被马赛克覆盖。\n00:15 背景墙上的裂纹比旧回放多出一条重复纹理。\n00:16 人物低头查看桌下提示板。\n00:17 提示板边缘短暂进入画面。\n00:18 画外有人轻敲两次。\n00:19 人物点头，仍未发声。\n00:20 镜中人物的头部保持正对窗户。\n00:21 现实人物转向显示器，镜中姿势未变。\n00:22 房间灯光从暖色切成冷白。\n00:23 时间码短暂跳回一秒。\n00:24 人物把手放到鼠标上。\n00:25 屏幕反光显示一行『验证剩余 22 秒』。\n00:26 镜中人物开始缓慢侧头。\n00:27 现实人物没有对应动作。\n00:28 空调声停止，出现很轻的呼吸。\n00:29 人物肩膀僵住。\n00:30 镜中脸部仍被压缩块遮挡。\n00:31 画面右上角出现 studio-B 内部时钟反光。\n00:32 人物看向画外，像在等指令。\n00:33 镜中人物已转过约四十五度。\n00:34 现实人物低头，双手离开桌面。\n00:35 码率恢复，镜中轮廓突然清晰。\n00:36 背景所有声音在同一时刻消失。\n00:37 人物仍然低头。\n00:38 镜中人物即将正对摄像头。\n00:39 镜中人物猛然转头直视镜头，现实人物没有动。\n00:40 画面发生一次水平撕裂。\n00:41 人物从椅子上起身，碰倒耳机。\n00:42 画外有人说『够了』。\n00:43 推流软件弹出结束倒计时。\n00:44 镜中已恢复为空房间反射。\n00:45 人物离开画面，椅子仍在轻晃。\n00:46 信号切黑，音频比画面晚半秒结束。",
+          "frames": 47,
+          "assetId": "art_raven_room_reference",
+          "description": "苏野生前正常直播的房间与语气参考",
+          "isEvidence": false
+        },
+        {
+          "path": "/docs/合同扫描件.pdf",
+          "type": "doc",
+          "content": "《数字资产托管协议》\n甲方：苏野　乙方：长明网络科技工作室\n签署日期：2026 年 2 月 20 日\n第一条　甲方将渡鸦直播账号及其公开内容的身故后维护权交由乙方托管。\n第二条　托管仅限纪念动态、历史视频整理、评论区秩序维护及家属指定的停更公告。\n第三条　乙方预付甲方人民币二万元，甲方确认该款优先用于家庭教育与生活支出。\n第四条　乙方不得伪造甲方实时发言，不得使用真人或合成形象制造甲方仍在世的误解。\n第五条　乙方不得转售账号身份、验证能力、实名状态或与账号关联的任何信用证明。\n第六条　甲方家属可在提供死亡证明后申请永久停更与数据导出。\n第七条　乙方承诺账号仅用于纪念性维护，不得参与商业交易、借贷、身份租赁及活体验证。\n第八条　平台规则变化时，乙方应向家属发送书面通知，不得单方扩大托管范围。\n第九条　争议发生时，以本协议扫描件、付款记录和甲方原始签名为准。\n第十条　本协议未授权布景复刻、真人扮演、声纹模仿或直播推流。\n甲方签名：苏野　乙方经办：梁炽（长明）\n附记：甲方在签署前询问『我妹妹能不能随时让账号停下来』，乙方书面回复『可以』。",
+          "isEvidence": true,
+          "evidenceId": "ev_contract"
+        },
+        {
+          "path": "/notes/记账_全年.txt",
+          "type": "text",
+          "content": "2025-07 平台分成 18420 房租 -4200 设备分期 -2100 给晚晚学费 -6000 结余 6120\n2025-08 平台分成 16110 房租 -4200 医疗 -980 给晚晚生活费 -3000 结余 7930\n2025-09 平台分成 14302 房租 -4200 猫粮医疗 -760 设备维修 -1600 结余 7742\n2025-10 平台分成 12980 房租 -4200 给晚晚学费 -8000 结余 780\n2025-11 平台分成 11040 房租 -4200 平台罚款 -2100 结余 4740\n2025-12 平台分成 15670 房租 -4200 年末设备税费 -3100 给晚晚 -4000 结余 4370\n2026-01 平台分成 9210 房租 -4200 馒头看病 -1680 结余 3330\n2026-02 平台分成 8660 房租 -4200 给晚晚学费 -8000 结余 -3540\n2026-02-20 长明预付款 +20000 先补学费和房租，合同说家属可以停更\n2026-03 平台分成 7020 房租 -4200 借款归还 -5000 结余 -2180\n2026-04 预计平台分成下降 62%，先不换电脑，馒头药不能停\n备注：别让晚晚知道缺口。签了能撑过这季度喔。",
+          "isEvidence": true,
+          "evidenceId": "ev_accounting"
+        }
+      ]
+    },
+    {
+      "addr": "edge-cdn.zhibo-lan.cn",
+      "label": "直播平台边缘服务器",
+      "discoverWhen": {
+        "type": "gate",
+        "id": "kg_nas_password"
+      },
+      "defense": {
+        "mode": "crack",
+        "layers": [
+          {
+            "id": "STREAM",
+            "durationSec": 6.0
+          },
+          {
+            "id": "EDGE",
+            "durationSec": 6.0
+          }
+        ],
+        "trace": {
+          "enabled": true,
+          "totalSeconds": 120.0,
+          "unfocusedRate": 0.25,
+          "lockoutSec": 20.0,
+          "signals": [
+            {
+              "at": 0.28,
+              "target": "relay-edge-12",
+              "reduction": 0.16
+            },
+            {
+              "at": 0.63,
+              "target": "encoder-obs281",
+              "reduction": 0.22
+            }
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "/streams/raven_47s.flv",
+          "type": "video",
+          "content": "00:00 画面从黑场亮起，右下角出现渡鸦频道旧水印。\n00:01 自动曝光抬高，房间中央的椅子空着。\n00:02 桌面机械键盘灯未亮，只有显示器待机灯。\n00:03 窗帘没有摆动，环境里有持续空调声。\n00:04 镜子位于画面右侧，与四月回放中的左侧位置相反。\n00:05 画面压缩出现第一轮色块。\n00:06 门外传来一次金属碰撞。\n00:07 一个穿黑色连帽衫的人从左边进入。\n00:08 人物背对摄像头，身形接近苏野但肩线更窄。\n00:09 人物扶正椅背，没有说话。\n00:10 桌面上的猫抓痕是印刷贴纸。\n00:11 人物坐下，耳机仍挂在桌边。\n00:12 镜中反射比人物动作慢约半秒。\n00:13 人物抬手，镜中手臂没有同步抬起。\n00:14 推流码率下降，脸部被马赛克覆盖。\n00:15 背景墙上的裂纹比旧回放多出一条重复纹理。\n00:16 人物低头查看桌下提示板。\n00:17 提示板边缘短暂进入画面。\n00:18 画外有人轻敲两次。\n00:19 人物点头，仍未发声。\n00:20 镜中人物的头部保持正对窗户。\n00:21 现实人物转向显示器，镜中姿势未变。\n00:22 房间灯光从暖色切成冷白。\n00:23 时间码短暂跳回一秒。\n00:24 人物把手放到鼠标上。\n00:25 屏幕反光显示一行『验证剩余 22 秒』。\n00:26 镜中人物开始缓慢侧头。\n00:27 现实人物没有对应动作。\n00:28 空调声停止，出现很轻的呼吸。\n00:29 人物肩膀僵住。\n00:30 镜中脸部仍被压缩块遮挡。\n00:31 画面右上角出现 studio-B 内部时钟反光。\n00:32 人物看向画外，像在等指令。\n00:33 镜中人物已转过约四十五度。\n00:34 现实人物低头，双手离开桌面。\n00:35 码率恢复，镜中轮廓突然清晰。\n00:36 背景所有声音在同一时刻消失。\n00:37 人物仍然低头。\n00:38 镜中人物即将正对摄像头。\n00:39 镜中人物猛然转头直视镜头，现实人物没有动。\n00:40 画面发生一次水平撕裂。\n00:41 人物从椅子上起身，碰倒耳机。\n00:42 画外有人说『够了』。\n00:43 推流软件弹出结束倒计时。\n00:44 镜中已恢复为空房间反射。\n00:45 人物离开画面，椅子仍在轻晃。\n00:46 信号切黑，音频比画面晚半秒结束。",
+          "frames": 47,
+          "assetId": "art_raven_stream_base",
+          "description": "47 秒推流，每秒抽样为一格取证帧",
+          "frameEvents": {
+            "39": {
+              "assetId": "art_frame39",
+              "description": "镜中人物已经转头，正对摄像头。",
+              "trigger": {
+                "type": "viewer_frame",
+                "target": "raven_47s:39"
+              }
+            }
+          },
+          "isEvidence": true,
+          "evidenceId": "ev_raven_video"
+        },
+        {
+          "path": "/logs/ingest.log",
+          "type": "log",
+          "content": "2026-07-14 00:00:00 INGEST seq=0000 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:00:37 INGEST seq=0001 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:01:14 INGEST seq=0002 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:01:51 INGEST seq=0003 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:02:28 INGEST seq=0004 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:03:05 INGEST seq=0005 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:03:42 INGEST seq=0006 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:04:19 INGEST seq=0007 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:04:56 INGEST seq=0008 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:05:33 INGEST seq=0009 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:06:10 INGEST seq=0010 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:06:47 INGEST seq=0011 actor=svc_04 result=OK latency=70ms\n2026-07-14 23:47:02 INGEST start channel=raven encoder=OBS28.1 ip=172.19.240.66 bitrate=2410kbps keyframe=2s\n2026-07-14 00:08:01 INGEST seq=0013 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:08:38 INGEST seq=0014 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:09:15 INGEST seq=0015 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:09:52 INGEST seq=0016 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:10:29 INGEST seq=0017 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:11:06 INGEST seq=0018 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:11:43 INGEST seq=0019 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:12:20 INGEST seq=0020 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:12:57 INGEST seq=0021 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:13:34 INGEST seq=0022 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:14:11 INGEST seq=0023 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:14:48 INGEST seq=0024 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:15:25 INGEST seq=0025 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:16:02 INGEST seq=0026 actor=svc_05 result=OK latency=83ms\n2026-07-14 00:16:39 INGEST seq=0027 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:17:16 INGEST seq=0028 actor=svc_00 result=OK latency=18ms\n2026-07-14 23:47:39 INGEST anomaly channel=raven mirror_motion=DESYNC frame_slot=39 source=studio-B\n2026-07-14 00:18:30 INGEST seq=0030 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:19:07 INGEST seq=0031 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:19:44 INGEST seq=0032 actor=svc_04 result=OK latency=70ms\n2026-07-14 23:47:49 INGEST stop channel=raven duration=47s packets=2821 checksum=71c9\n2026-07-14 00:20:58 INGEST seq=0034 actor=svc_06 result=OK latency=96ms\n2026-07-14 00:21:35 INGEST seq=0035 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:22:12 INGEST seq=0036 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:22:49 INGEST seq=0037 actor=svc_02 result=OK latency=44ms\n2026-07-14 00:23:26 INGEST seq=0038 actor=svc_03 result=OK latency=57ms\n2026-07-14 00:24:03 INGEST seq=0039 actor=svc_04 result=OK latency=70ms\n2026-07-14 00:24:40 INGEST seq=0040 actor=svc_05 result=OK latency=83ms\n2026-07-14 23:48:04 INGEST verification buyer=ANON-214 result=ACTIVE_IDENTITY_CONFIRMED operator=actor7\n2026-07-14 00:25:54 INGEST seq=0042 actor=svc_00 result=OK latency=18ms\n2026-07-14 00:26:31 INGEST seq=0043 actor=svc_01 result=OK latency=31ms\n2026-07-14 00:27:08 INGEST seq=0044 actor=svc_02 result=OK latency=44ms",
+          "isEvidence": true,
+          "evidenceId": "ev_ingest_log"
+        },
+        {
+          "path": "/logs/raven_history.log",
+          "type": "log",
+          "content": "2026-02-01 22:10:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=6200s result=ARCHIVED\n2026-02-04 22:21:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=6337s result=ARCHIVED\n2026-02-07 22:32:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=6474s result=ARCHIVED\n2026-02-10 22:43:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=6611s result=ARCHIVED\n2026-02-13 22:54:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=6748s result=ARCHIVED\n2026-02-16 23:05:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=6885s result=ARCHIVED\n2026-02-19 23:16:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=7022s result=ARCHIVED\n2026-02-22 23:27:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=7159s result=ARCHIVED\n2026-02-25 23:38:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=7296s result=ARCHIVED\n2026-02-28 23:49:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=7433s result=ARCHIVED\n2026-03-04 00:00:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=7570s result=ARCHIVED\n2026-03-07 00:11:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=7707s result=ARCHIVED\n2026-03-10 00:22:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=7844s result=ARCHIVED\n2026-03-13 00:33:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=7981s result=ARCHIVED\n2026-03-16 00:44:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=8118s result=ARCHIVED\n2026-03-19 00:55:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=8255s result=ARCHIVED\n2026-03-22 01:06:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=8392s result=ARCHIVED\n2026-03-25 01:17:00 channel=raven encoder=OBS26.4 ip=10.24.7.115 duration=8529s result=ARCHIVED",
+          "isEvidence": true,
+          "evidenceId": "ev_stream_history"
+        }
+      ]
+    },
+    {
+      "addr": "changming-mem.cn",
+      "label": "长明数字纪念馆与工单系统",
+      "discoverWhen": {
+        "type": "gate",
+        "id": "kg_search_changming"
+      },
+      "defense": {
+        "mode": "credential",
+        "credentialGateId": "kg_changming_login",
+        "layers": [],
+        "trace": {
+          "enabled": true,
+          "totalSeconds": 150.0,
+          "unfocusedRate": 0.25,
+          "lockoutSec": 20.0,
+          "signals": [
+            {
+              "at": 0.55,
+              "target": "cm-auth-relay",
+              "reduction": 0.2
+            }
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "/tickets/RAVEN-0339.txt",
+          "type": "doc",
+          "content": "raven 频道粉丝质疑纪念动态文风不像本人。词频模型把『喔』改成了『哦』，需反向修正但买方要求继续保持整点活跃。账号已升级为活性维护套餐，棚 B 安排一次 47 秒实景验证。不得向家属展示套餐名称。",
+          "isEvidence": true,
+          "evidenceId": "ev_ticket"
+        },
+        {
+          "path": "/internal/排班表_0715.csv",
+          "type": "sheet",
+          "content": "date,start,end,actor,studio,task,channel,status\n2026-07-10,20:00,21:30,2号扮演者,棚A,纪念动态校对,pool-120,完成\n2026-07-10,21:00,22:30,4号扮演者,棚B,头像活体录制,pool-121,完成\n2026-07-10,22:00,23:30,7号扮演者,棚C,房间布景维护,pool-122,完成\n2026-07-10,23:00,24:30,9号扮演者,棚D,买方验证,pool-123,完成\n2026-07-11,20:00,21:30,文案A,棚A,声纹样本整理,pool-124,完成\n2026-07-11,21:00,22:30,灯光B,棚B,纪念动态校对,pool-125,完成\n2026-07-11,22:00,23:30,2号扮演者,棚C,头像活体录制,pool-126,完成\n2026-07-11,23:00,24:30,4号扮演者,棚D,房间布景维护,pool-127,完成\n2026-07-12,20:00,21:30,7号扮演者,棚A,买方验证,pool-128,完成\n2026-07-12,21:00,22:30,9号扮演者,棚B,声纹样本整理,pool-129,完成\n2026-07-12,22:00,23:30,文案A,棚C,纪念动态校对,pool-130,完成\n2026-07-12,23:00,24:30,灯光B,棚D,头像活体录制,pool-131,完成\n2026-07-13,20:00,21:30,2号扮演者,棚A,房间布景维护,pool-132,完成\n2026-07-13,21:00,22:30,4号扮演者,棚B,买方验证,pool-133,完成\n2026-07-13,22:00,23:30,7号扮演者,棚C,声纹样本整理,pool-134,完成\n2026-07-13,23:00,24:30,9号扮演者,棚D,纪念动态校对,pool-135,完成\n2026-07-14,20:00,21:30,文案A,棚A,头像活体录制,pool-136,完成\n2026-07-14,21:00,22:30,灯光B,棚B,房间布景维护,pool-137,完成\n2026-07-14,22:00,23:30,7号扮演者,棚B(渡鸦布景),实景直播·47秒·验证用,raven,完成\n2026-07-14,23:00,24:30,4号扮演者,棚D,声纹样本整理,pool-139,完成\n2026-07-15,20:00,21:30,7号扮演者,棚A,纪念动态校对,pool-140,完成",
+          "isEvidence": true,
+          "evidenceId": "ev_schedule"
+        },
+        {
+          "path": "/tickets/POOL-1182.txt",
+          "type": "doc",
+          "content": "买方无法通过租房平台活体核验，申请追加一次眨眼视频。账号原主家属仍在关注动态，建议降低频率并关闭评论。经办人要求不要使用旧房间布景，避免熟人识别。",
+          "isEvidence": false
+        },
+        {
+          "path": "/tickets/MEM-2044.txt",
+          "type": "doc",
+          "content": "纪念页自动回复误把母亲称为姐姐，引发家属投诉。文案组已回滚称谓词典，客户经理承诺删除相关截图。该账号不允许直播，只保留节日动态。",
+          "isEvidence": false
+        },
+        {
+          "path": "/tickets/POOL-1190.txt",
+          "type": "doc",
+          "content": "买方用于临时医疗挂号时触发死亡库冲突。技术组建议更换低关注度身份，不再继续维护现账号。旧账号将在七日后发布旅行动态以解释长期离线。",
+          "isEvidence": false
+        },
+        {
+          "path": "/tickets/STUDIO-77.txt",
+          "type": "doc",
+          "content": "棚 C 墙纸纹理与原主公开视频不一致，验证被买方驳回。美术组需按旧视频重新打印墙纸并调整镜像方向，验收前禁止推流。",
+          "isEvidence": false
+        },
+        {
+          "path": "/tickets/MEM-2071.txt",
+          "type": "doc",
+          "content": "家属提交永久停更申请，但账号已绑定三份活人证明订单。商务要求延迟处理十五日，客服统一回复『平台审核中』。法务未签字。",
+          "isEvidence": false
+        },
+        {
+          "path": "/tickets/POOL-1203.txt",
+          "type": "doc",
+          "content": "新买方在零网中无工作、租赁和医疗记录，要求紧急启用身份。经办签名 REN-0，优先级高于普通纪念账号。需在今晚完成头像、声纹与一次短时直播。",
+          "isEvidence": false
+        }
+      ]
+    },
+    {
+      "addr": "172.19.240.66",
+      "label": "农场棚区内网",
+      "discoverWhen": {
+        "type": "gate",
+        "id": "kg_changming_login"
+      },
+      "defense": {
+        "mode": "crack",
+        "layers": [
+          {
+            "id": "VEIL",
+            "durationSec": 6.0
+          },
+          {
+            "id": "PULSE",
+            "durationSec": 7.0
+          },
+          {
+            "id": "IDENTITY",
+            "durationSec": 7.0
+          }
+        ],
+        "trace": {
+          "enabled": true,
+          "totalSeconds": 90.0,
+          "unfocusedRate": 0.25,
+          "lockoutSec": 20.0,
+          "signals": [
+            {
+              "at": 0.25,
+              "target": "farm-hop-7",
+              "reduction": 0.14
+            },
+            {
+              "at": 0.5,
+              "target": "actor-roster",
+              "reduction": 0.16
+            },
+            {
+              "at": 0.72,
+              "target": "REN-0",
+              "reduction": 0.2
+            }
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "/roster/身份池.db",
+          "type": "db",
+          "content": "pool_id,dead_account,buyer_state,proof_use,broker,status\nIDP-0001,mem-201,周某 / 零网状态=查无此人,活人证明-租房,CM-B00,待复核\nIDP-0002,mem-202,沈某 / 零网状态=查无此人,活人证明-临时用工,CM-B01,已交付\nIDP-0003,mem-203,陈某 / 零网状态=查无此人,活人证明-医疗挂号,CM-B02,已交付\nIDP-0004,mem-204,梁某 / 零网状态=查无此人,活人证明-交通核验,CM-B03,已交付\nIDP-0005,mem-205,许某 / 零网状态=查无此人,活人证明-租房,CM-B04,已交付\nIDP-0006,mem-206,顾某 / 零网状态=查无此人,活人证明-临时用工,CM-B05,待复核\nIDP-0007,mem-207,蒋某 / 零网状态=查无此人,活人证明-医疗挂号,CM-B00,已交付\nIDP-0008,mem-208,唐某 / 零网状态=查无此人,活人证明-交通核验,CM-B01,已交付\nIDP-0009,mem-209,周某 / 零网状态=查无此人,活人证明-租房,CM-B02,已交付\nIDP-0010,mem-210,沈某 / 零网状态=查无此人,活人证明-临时用工,CM-B03,已交付\nIDP-0011,mem-211,陈某 / 零网状态=查无此人,活人证明-医疗挂号,CM-B04,待复核\nIDP-0012,mem-212,梁某 / 零网状态=查无此人,活人证明-交通核验,CM-B05,已交付\nIDP-0013,mem-213,许某 / 零网状态=查无此人,活人证明-租房,CM-B00,已交付\nIDP-0014,mem-214,顾某 / 零网状态=查无此人,活人证明-临时用工,CM-B01,已交付\nIDP-0015,mem-215,蒋某 / 零网状态=查无此人,活人证明-医疗挂号,CM-B02,已交付\nIDP-0016,mem-216,唐某 / 零网状态=查无此人,活人证明-交通核验,CM-B03,待复核\nIDP-0017,mem-217,周某 / 零网状态=查无此人,活人证明-租房,CM-B04,已交付\nIDP-0018,mem-218,沈某 / 零网状态=查无此人,活人证明-临时用工,CM-B05,已交付\nIDP-0019,mem-219,陈某 / 零网状态=查无此人,活人证明-医疗挂号,CM-B00,已交付\nIDP-0020,mem-220,梁某 / 零网状态=查无此人,活人证明-交通核验,CM-B01,已交付\nIDP-0021,mem-221,许某 / 零网状态=查无此人,活人证明-租房,CM-B02,待复核\nIDP-0022,mem-222,顾某 / 零网状态=查无此人,活人证明-临时用工,CM-B03,已交付\nIDP-0023,mem-223,蒋某 / 零网状态=查无此人,活人证明-医疗挂号,CM-B04,已交付\nIDP-0024,mem-224,唐某 / 零网状态=查无此人,活人证明-交通核验,REN-0,已交付\nIDP-0025,mem-225,周某 / 零网状态=查无此人,活人证明-租房,CM-B00,已交付\nIDP-0026,mem-226,沈某 / 零网状态=查无此人,活人证明-临时用工,CM-B01,待复核\nIDP-0027,mem-227,陈某 / 零网状态=查无此人,活人证明-医疗挂号,CM-B02,已交付\nIDP-0028,mem-228,梁某 / 零网状态=查无此人,活人证明-交通核验,CM-B03,已交付\nIDP-0029,mem-229,许某 / 零网状态=查无此人,活人证明-租房,CM-B04,已交付\nIDP-0030,mem-230,顾某 / 零网状态=查无此人,活人证明-临时用工,CM-B05,已交付\nIDP-0031,mem-231,蒋某 / 零网状态=查无此人,活人证明-医疗挂号,CM-B00,待复核",
+          "isEvidence": true,
+          "evidenceId": "ev_identity_pool"
+        }
+      ]
+    }
+  ],
+  "knowledgeGates": [
+    {
+      "id": "kg_nas_password",
+      "channel": "login",
+      "where": "10.24.7.115 登录",
+      "howPlayerFigures": "动态写猫叫馒头，置顶写开播三周年 0713。",
+      "accept": [
+        {
+          "user": "suye",
+          "pass": "mantou0713"
+        },
+        {
+          "user": "raven",
+          "pass": "MANTOU0713"
+        },
+        {
+          "user": "苏野",
+          "pass": "馒头0713"
+        }
+      ],
+      "aliases": [],
+      "hints": [
+        "我哥密码从来记不住，都用馒头……馒头是他的猫。",
+        "他什么纪念日都设成密码，翻翻置顶动态。",
+        "猫名拼音加那个日期，用户名试他的本名或直播名。"
+      ],
+      "unlockEffects": []
+    },
+    {
+      "id": "kg_search_changming",
+      "channel": "search",
+      "where": "零索自由搜索",
+      "howPlayerFigures": "NAS 合同出现长明网络科技工作室。",
+      "accept": [
+        "长明",
+        "长明网络科技",
+        "changming",
+        "数字纪念馆"
+      ],
+      "aliases": [
+        "长明工作室",
+        "长明纪念馆"
+      ],
+      "hints": [
+        "合同乙方那个名字，你查过吗？",
+        "搜索引擎不只能搜人名，公司也能搜。",
+        "搜『长明』，再打开旧论坛缓存。"
+      ],
+      "unlockEffects": []
+    },
+    {
+      "id": "kg_changming_login",
+      "channel": "login",
+      "where": "changming-mem.cn 工单系统",
+      "howPlayerFigures": "前员工帖子暴露工号 CM-041、2023 年 3 月入职和默认密码规则。",
+      "accept": [
+        {
+          "user": "CM-041",
+          "pass": "202303changming"
+        }
+      ],
+      "aliases": [],
+      "hints": [
+        "那个爆料的前员工，话说得比他以为的多。",
+        "他连工号、入职年月和默认规则都写了。",
+        "用户名用工号；密码是入职年月加公司全拼。"
+      ],
+      "unlockEffects": []
+    }
+  ],
+  "sites": [
+    {
+      "id": "site_raven_live",
+      "gateId": "",
+      "addresses": [
+        "raven.zhibo-lan.cn",
+        "渡鸦",
+        "渡鸦直播"
+      ],
+      "skin": "raven",
+      "title": "渡鸦的直播间",
+      "subtitle": "关注 184,203　最后直播：昨晚 23:47，持续 47 秒",
+      "content": "频道状态：纪念维护中。置顶：开播三周年 0713。房间主人苏野已于三个月前去世。",
+      "dynamicBefore": [
+        {
+          "time": "2026-03-04 23:17",
+          "text": "凌晨两点还在调麦，邻居再敲墙我就改成手语直播喔。"
+        },
+        {
+          "time": "2026-03-05 23:36",
+          "text": "馒头今天三岁了喔，抢走我半块鸡胸还装没事。"
+        },
+        {
+          "time": "2026-03-06 23:55",
+          "text": "新地图的电梯声比怪物还吓人，耳机党稳喔。"
+        },
+        {
+          "time": "2026-03-08 00:14",
+          "text": "房租又涨了，今晚多播一小时，别给我刷贵礼物喔。"
+        },
+        {
+          "time": "2026-03-09 00:33",
+          "text": "晚晚说她考试过了，我比自己上榜还高兴喔。"
+        },
+        {
+          "time": "2026-03-10 00:52",
+          "text": "键盘空格终于换好，之前每次跳跃都像临终遗言喔。"
+        },
+        {
+          "time": "2026-03-11 01:11",
+          "text": "有人问我为什么总熬夜，因为白天楼上装修，稳喔。"
+        },
+        {
+          "time": "2026-03-12 01:30",
+          "text": "馒头把摄像头撞歪了半小时，你们居然没人提醒我喔。"
+        },
+        {
+          "time": "2026-03-12 23:26",
+          "text": "今天不打排位，读粉丝寄来的烂笑话，谁先笑谁输喔。"
+        },
+        {
+          "time": "2026-03-13 23:45",
+          "text": "开播三周年是 0713，老观众来领一个没有用的纪念徽章喔。"
+        },
+        {
+          "time": "2026-03-15 00:04",
+          "text": "月底账单看得我心跳加速，比恐怖游戏有效喔。"
+        },
+        {
+          "time": "2026-03-16 00:23",
+          "text": "晚点开，先去给晚晚转学费，她又说不用，嘴硬喔。"
+        },
+        {
+          "time": "2026-03-17 00:42",
+          "text": "新耳机左边偏响，不知道是设备坏了还是我耳朵坏了喔。"
+        },
+        {
+          "time": "2026-03-18 01:01",
+          "text": "今晚十二点以后别点外卖，楼下师傅记得我房号了喔。"
+        },
+        {
+          "time": "2026-03-19 01:20",
+          "text": "直播间封面懒得换，反正你们是来看我翻车的喔。"
+        },
+        {
+          "time": "2026-03-20 01:39",
+          "text": "馒头睡在路由器上，网速只有它能决定喔。"
+        },
+        {
+          "time": "2026-03-20 23:35",
+          "text": "刚收到一份奇怪合同，字比游戏用户协议还多喔。"
+        },
+        {
+          "time": "2026-03-21 23:54",
+          "text": "今天早点下，明天去办点事，别在评论区给我守灵喔。"
+        },
+        {
+          "time": "2026-03-23 00:13",
+          "text": "有人说我笑点低，我只是尊重每一个冷笑话喔。"
+        },
+        {
+          "time": "2026-03-24 00:32",
+          "text": "旧录像修复好了，四月那场终于能看清房间喔。"
+        },
+        {
+          "time": "2026-03-25 00:51",
+          "text": "晚晚别偷偷看动态了，哥没欠钱，真的稳喔。"
+        },
+        {
+          "time": "2026-03-26 01:10",
+          "text": "平台分成又改，我决定以后用空气交房租喔。"
+        },
+        {
+          "time": "2026-03-27 01:29",
+          "text": "猫粮比我的饭贵，馒头已经实现阶层跃迁喔。"
+        },
+        {
+          "time": "2026-03-27 23:25",
+          "text": "新来的朋友别问本名，渡鸦比较好记喔。"
+        },
+        {
+          "time": "2026-03-28 23:44",
+          "text": "镜子挪到门左边以后，房间看着宽了一点喔。"
+        },
+        {
+          "time": "2026-03-30 00:03",
+          "text": "今天嗓子哑，字幕比我本人勤快喔。"
+        },
+        {
+          "time": "2026-03-31 00:22",
+          "text": "感谢老七寄的螺丝刀，桌腿终于不晃了喔。"
+        },
+        {
+          "time": "2026-04-01 00:41",
+          "text": "凌晨四点剪完片，太阳出来像系统报错喔。"
+        },
+        {
+          "time": "2026-04-02 01:00",
+          "text": "如果哪天不播了，希望你们先去睡觉，别等喔。"
+        },
+        {
+          "time": "2026-04-03 01:19",
+          "text": "稳喔。今天就这句，剩下的明天说。"
+        }
+      ],
+      "dynamicAfter": [
+        {
+          "time": "2026-04-08 08:00",
+          "text": "记得按时吃饭，愿今天一切顺利哦。",
+          "scheduleIndex": 1
+        },
+        {
+          "time": "2026-04-08 16:00",
+          "text": "今天适合整理桌面，愿今天一切顺利哦。",
+          "scheduleIndex": 2
+        },
+        {
+          "time": "2026-04-09 00:00",
+          "text": "旧游戏也有新乐趣，愿今天一切顺利哦。",
+          "scheduleIndex": 3
+        },
+        {
+          "time": "2026-04-09 08:00",
+          "text": "给自己留一点休息时间，愿今天一切顺利哦。",
+          "scheduleIndex": 4
+        },
+        {
+          "time": "2026-04-09 16:00",
+          "text": "馒头看起来精神很好，愿今天一切顺利哦。",
+          "scheduleIndex": 5
+        },
+        {
+          "time": "2026-04-10 00:00",
+          "text": "谢谢仍在这里的人，愿今天一切顺利哦。",
+          "scheduleIndex": 6
+        },
+        {
+          "time": "2026-04-10 08:00",
+          "text": "夜深了请早点睡，愿今天一切顺利哦。",
+          "scheduleIndex": 7
+        },
+        {
+          "time": "2026-04-10 16:00",
+          "text": "回忆值得被温柔保存，愿今天一切顺利哦。",
+          "scheduleIndex": 8
+        },
+        {
+          "time": "2026-04-11 00:00",
+          "text": "今天也要保持稳定，愿今天一切顺利哦。",
+          "scheduleIndex": 9
+        },
+        {
+          "time": "2026-04-11 08:00",
+          "text": "直播片段正在整理，愿今天一切顺利哦。",
+          "scheduleIndex": 10
+        },
+        {
+          "time": "2026-04-11 16:00",
+          "text": "天气转凉注意添衣，愿今天一切顺利哦。",
+          "scheduleIndex": 11
+        },
+        {
+          "time": "2026-04-12 00:00",
+          "text": "周末可以重看旧录像，愿今天一切顺利哦。",
+          "scheduleIndex": 12
+        },
+        {
+          "time": "2026-04-12 08:00",
+          "text": "感谢每一次留言，愿今天一切顺利哦。",
+          "scheduleIndex": 13
+        },
+        {
+          "time": "2026-04-12 16:00",
+          "text": "生活会继续向前，愿今天一切顺利哦。",
+          "scheduleIndex": 14
+        },
+        {
+          "time": "2026-04-13 00:00",
+          "text": "纪念不是停在原地，愿今天一切顺利哦。",
+          "scheduleIndex": 15
+        },
+        {
+          "time": "2026-04-13 08:00",
+          "text": "房间已经打扫干净，愿今天一切顺利哦。",
+          "scheduleIndex": 16
+        },
+        {
+          "time": "2026-04-13 16:00",
+          "text": "愿你今天心情平稳，愿今天一切顺利哦。",
+          "scheduleIndex": 17
+        },
+        {
+          "time": "2026-04-14 00:00",
+          "text": "下次更新仍在整点，愿今天一切顺利哦。",
+          "scheduleIndex": 18
+        },
+        {
+          "time": "2026-04-14 08:00",
+          "text": "记得按时吃饭，感谢大家一直陪伴哦。",
+          "scheduleIndex": 19
+        },
+        {
+          "time": "2026-04-14 16:00",
+          "text": "今天适合整理桌面，感谢大家一直陪伴哦。",
+          "scheduleIndex": 20
+        },
+        {
+          "time": "2026-04-15 00:00",
+          "text": "旧游戏也有新乐趣，感谢大家一直陪伴哦。",
+          "scheduleIndex": 21
+        },
+        {
+          "time": "2026-04-15 08:00",
+          "text": "给自己留一点休息时间，感谢大家一直陪伴哦。",
+          "scheduleIndex": 22
+        },
+        {
+          "time": "2026-04-15 16:00",
+          "text": "馒头看起来精神很好，感谢大家一直陪伴哦。",
+          "scheduleIndex": 23
+        },
+        {
+          "time": "2026-04-16 00:00",
+          "text": "谢谢仍在这里的人，感谢大家一直陪伴哦。",
+          "scheduleIndex": 24
+        },
+        {
+          "time": "2026-04-16 08:00",
+          "text": "夜深了请早点睡，感谢大家一直陪伴哦。",
+          "scheduleIndex": 25
+        },
+        {
+          "time": "2026-04-16 16:00",
+          "text": "回忆值得被温柔保存，感谢大家一直陪伴哦。",
+          "scheduleIndex": 26
+        },
+        {
+          "time": "2026-04-17 00:00",
+          "text": "今天也要保持稳定，感谢大家一直陪伴哦。",
+          "scheduleIndex": 27
+        },
+        {
+          "time": "2026-04-17 08:00",
+          "text": "直播片段正在整理，感谢大家一直陪伴哦。",
+          "scheduleIndex": 28
+        },
+        {
+          "time": "2026-04-17 16:00",
+          "text": "天气转凉注意添衣，感谢大家一直陪伴哦。",
+          "scheduleIndex": 29
+        },
+        {
+          "time": "2026-04-18 00:00",
+          "text": "周末可以重看旧录像，感谢大家一直陪伴哦。",
+          "scheduleIndex": 30
+        },
+        {
+          "time": "2026-04-18 08:00",
+          "text": "感谢每一次留言，感谢大家一直陪伴哦。",
+          "scheduleIndex": 31
+        },
+        {
+          "time": "2026-04-18 16:00",
+          "text": "生活会继续向前，感谢大家一直陪伴哦。",
+          "scheduleIndex": 32
+        },
+        {
+          "time": "2026-04-19 00:00",
+          "text": "纪念不是停在原地，感谢大家一直陪伴哦。",
+          "scheduleIndex": 33
+        },
+        {
+          "time": "2026-04-19 08:00",
+          "text": "房间已经打扫干净，感谢大家一直陪伴哦。",
+          "scheduleIndex": 34
+        },
+        {
+          "time": "2026-04-19 16:00",
+          "text": "愿你今天心情平稳，感谢大家一直陪伴哦。",
+          "scheduleIndex": 35
+        },
+        {
+          "time": "2026-04-20 00:00",
+          "text": "下次更新仍在整点，感谢大家一直陪伴哦。",
+          "scheduleIndex": 36
+        },
+        {
+          "time": "2026-04-20 08:00",
+          "text": "记得按时吃饭，把普通日子认真过完哦。",
+          "scheduleIndex": 37
+        },
+        {
+          "time": "2026-04-20 16:00",
+          "text": "今天适合整理桌面，把普通日子认真过完哦。",
+          "scheduleIndex": 38
+        },
+        {
+          "time": "2026-04-21 00:00",
+          "text": "旧游戏也有新乐趣，把普通日子认真过完哦。",
+          "scheduleIndex": 39
+        },
+        {
+          "time": "2026-04-21 08:00",
+          "text": "给自己留一点休息时间，把普通日子认真过完哦。",
+          "scheduleIndex": 40
+        },
+        {
+          "time": "2026-04-21 16:00",
+          "text": "馒头看起来精神很好，把普通日子认真过完哦。",
+          "scheduleIndex": 41
+        },
+        {
+          "time": "2026-04-22 00:00",
+          "text": "谢谢仍在这里的人，把普通日子认真过完哦。",
+          "scheduleIndex": 42
+        },
+        {
+          "time": "2026-04-22 08:00",
+          "text": "夜深了请早点睡，把普通日子认真过完哦。",
+          "scheduleIndex": 43
+        },
+        {
+          "time": "2026-04-22 16:00",
+          "text": "回忆值得被温柔保存，把普通日子认真过完哦。",
+          "scheduleIndex": 44
+        },
+        {
+          "time": "2026-04-23 00:00",
+          "text": "今天也要保持稳定，把普通日子认真过完哦。",
+          "scheduleIndex": 45
+        },
+        {
+          "time": "2026-04-23 08:00",
+          "text": "直播片段正在整理，把普通日子认真过完哦。",
+          "scheduleIndex": 46
+        },
+        {
+          "time": "2026-04-23 16:00",
+          "text": "天气转凉注意添衣，把普通日子认真过完哦。",
+          "scheduleIndex": 47
+        },
+        {
+          "time": "2026-04-24 00:00",
+          "text": "周末可以重看旧录像，把普通日子认真过完哦。",
+          "scheduleIndex": 48
+        },
+        {
+          "time": "2026-04-24 08:00",
+          "text": "感谢每一次留言，把普通日子认真过完哦。",
+          "scheduleIndex": 49
+        },
+        {
+          "time": "2026-04-24 16:00",
+          "text": "生活会继续向前，把普通日子认真过完哦。",
+          "scheduleIndex": 50
+        },
+        {
+          "time": "2026-04-25 00:00",
+          "text": "纪念不是停在原地，把普通日子认真过完哦。",
+          "scheduleIndex": 51
+        },
+        {
+          "time": "2026-04-25 08:00",
+          "text": "房间已经打扫干净，把普通日子认真过完哦。",
+          "scheduleIndex": 52
+        },
+        {
+          "time": "2026-04-25 16:00",
+          "text": "愿你今天心情平稳，把普通日子认真过完哦。",
+          "scheduleIndex": 53
+        },
+        {
+          "time": "2026-04-26 00:00",
+          "text": "下次更新仍在整点，把普通日子认真过完哦。",
+          "scheduleIndex": 54
+        },
+        {
+          "time": "2026-04-26 08:00",
+          "text": "记得按时吃饭，这里会继续保持更新哦。",
+          "scheduleIndex": 55
+        },
+        {
+          "time": "2026-04-26 16:00",
+          "text": "今天适合整理桌面，这里会继续保持更新哦。",
+          "scheduleIndex": 56
+        },
+        {
+          "time": "2026-04-27 00:00",
+          "text": "旧游戏也有新乐趣，这里会继续保持更新哦。",
+          "scheduleIndex": 57
+        },
+        {
+          "time": "2026-04-27 08:00",
+          "text": "给自己留一点休息时间，这里会继续保持更新哦。",
+          "scheduleIndex": 58
+        },
+        {
+          "time": "2026-04-27 16:00",
+          "text": "馒头看起来精神很好，这里会继续保持更新哦。",
+          "scheduleIndex": 59
+        },
+        {
+          "time": "2026-04-28 00:00",
+          "text": "谢谢仍在这里的人，这里会继续保持更新哦。",
+          "scheduleIndex": 60
+        },
+        {
+          "time": "2026-04-28 08:00",
+          "text": "夜深了请早点睡，这里会继续保持更新哦。",
+          "scheduleIndex": 61
+        },
+        {
+          "time": "2026-04-28 16:00",
+          "text": "回忆值得被温柔保存，这里会继续保持更新哦。",
+          "scheduleIndex": 62
+        },
+        {
+          "time": "2026-04-29 00:00",
+          "text": "今天也要保持稳定，这里会继续保持更新哦。",
+          "scheduleIndex": 63
+        },
+        {
+          "time": "2026-04-29 08:00",
+          "text": "直播片段正在整理，这里会继续保持更新哦。",
+          "scheduleIndex": 64
+        },
+        {
+          "time": "2026-04-29 16:00",
+          "text": "天气转凉注意添衣，这里会继续保持更新哦。",
+          "scheduleIndex": 65
+        },
+        {
+          "time": "2026-04-30 00:00",
+          "text": "周末可以重看旧录像，这里会继续保持更新哦。",
+          "scheduleIndex": 66
+        },
+        {
+          "time": "2026-04-30 08:00",
+          "text": "感谢每一次留言，这里会继续保持更新哦。",
+          "scheduleIndex": 67
+        },
+        {
+          "time": "2026-04-30 16:00",
+          "text": "生活会继续向前，这里会继续保持更新哦。",
+          "scheduleIndex": 68
+        },
+        {
+          "time": "2026-05-01 00:00",
+          "text": "纪念不是停在原地，这里会继续保持更新哦。",
+          "scheduleIndex": 69
+        },
+        {
+          "time": "2026-05-01 08:00",
+          "text": "房间已经打扫干净，这里会继续保持更新哦。",
+          "scheduleIndex": 70
+        },
+        {
+          "time": "2026-05-01 16:00",
+          "text": "愿你今天心情平稳，这里会继续保持更新哦。",
+          "scheduleIndex": 71
+        },
+        {
+          "time": "2026-05-02 00:00",
+          "text": "下次更新仍在整点，这里会继续保持更新哦。",
+          "scheduleIndex": 72
+        },
+        {
+          "time": "2026-05-02 08:00",
+          "text": "记得按时吃饭，请照顾好自己哦。",
+          "scheduleIndex": 73
+        },
+        {
+          "time": "2026-05-02 16:00",
+          "text": "今天适合整理桌面，请照顾好自己哦。",
+          "scheduleIndex": 74
+        },
+        {
+          "time": "2026-05-03 00:00",
+          "text": "旧游戏也有新乐趣，请照顾好自己哦。",
+          "scheduleIndex": 75
+        },
+        {
+          "time": "2026-05-03 08:00",
+          "text": "给自己留一点休息时间，请照顾好自己哦。",
+          "scheduleIndex": 76
+        },
+        {
+          "time": "2026-05-03 16:00",
+          "text": "馒头看起来精神很好，请照顾好自己哦。",
+          "scheduleIndex": 77
+        },
+        {
+          "time": "2026-05-04 00:00",
+          "text": "谢谢仍在这里的人，请照顾好自己哦。",
+          "scheduleIndex": 78
+        },
+        {
+          "time": "2026-05-04 08:00",
+          "text": "夜深了请早点睡，请照顾好自己哦。",
+          "scheduleIndex": 79
+        },
+        {
+          "time": "2026-05-04 16:00",
+          "text": "回忆值得被温柔保存，请照顾好自己哦。",
+          "scheduleIndex": 80
+        },
+        {
+          "time": "2026-05-05 00:00",
+          "text": "今天也要保持稳定，请照顾好自己哦。",
+          "scheduleIndex": 81
+        },
+        {
+          "time": "2026-05-05 08:00",
+          "text": "直播片段正在整理，请照顾好自己哦。",
+          "scheduleIndex": 82
+        },
+        {
+          "time": "2026-05-05 16:00",
+          "text": "天气转凉注意添衣，请照顾好自己哦。",
+          "scheduleIndex": 83
+        },
+        {
+          "time": "2026-05-06 00:00",
+          "text": "周末可以重看旧录像，请照顾好自己哦。",
+          "scheduleIndex": 84
+        },
+        {
+          "time": "2026-05-06 08:00",
+          "text": "感谢每一次留言，请照顾好自己哦。",
+          "scheduleIndex": 85
+        },
+        {
+          "time": "2026-05-06 16:00",
+          "text": "生活会继续向前，请照顾好自己哦。",
+          "scheduleIndex": 86
+        },
+        {
+          "time": "2026-05-07 00:00",
+          "text": "纪念不是停在原地，请照顾好自己哦。",
+          "scheduleIndex": 87
+        },
+        {
+          "time": "2026-05-07 08:00",
+          "text": "房间已经打扫干净，请照顾好自己哦。",
+          "scheduleIndex": 88
+        },
+        {
+          "time": "2026-05-07 16:00",
+          "text": "愿你今天心情平稳，请照顾好自己哦。",
+          "scheduleIndex": 89
+        },
+        {
+          "time": "2026-05-08 00:00",
+          "text": "下次更新仍在整点，请照顾好自己哦。",
+          "scheduleIndex": 90
+        }
+      ],
+      "comments": [
+        {
+          "author": "熬夜看鸦",
+          "time": "2026-07-14 18:00",
+          "text": "这不是渡鸦，他从来不用『哦』。"
+        },
+        {
+          "author": "旧频道存档员",
+          "time": "2026-07-14 19:07",
+          "text": "别消费死者了，平台出来解释。"
+        },
+        {
+          "author": "馒头投喂站",
+          "time": "2026-07-14 20:14",
+          "text": "也许是家属在维护账号，先别骂。"
+        },
+        {
+          "author": "七月十三号",
+          "time": "2026-07-14 21:21",
+          "text": "三个月了还准点发，谁看了不发毛。"
+        },
+        {
+          "author": "南窗没关",
+          "time": "2026-07-14 22:28",
+          "text": "老粉都知道他不可能早上八点发动态。"
+        },
+        {
+          "author": "不吃香菜的老粉",
+          "time": "2026-07-14 23:35",
+          "text": "我只是想回来看看旧视频。"
+        },
+        {
+          "author": "码率观察员",
+          "time": "2026-07-14 18:42",
+          "text": "昨晚直播有人录屏吗？"
+        },
+        {
+          "author": "镜子在左边",
+          "time": "2026-07-14 19:49",
+          "text": "47 秒里镜子的位置不对。"
+        },
+        {
+          "author": "只看录播",
+          "time": "2026-07-15 20:56",
+          "text": "房间能搭景，笑声搭不出来。"
+        },
+        {
+          "author": "平台请回话",
+          "time": "2026-07-15 21:03",
+          "text": "别传灵异，先看推流信息。"
+        },
+        {
+          "author": "山城网吧夜班",
+          "time": "2026-07-15 22:10",
+          "text": "账号纪念功能不是这样写文案的。"
+        },
+        {
+          "author": "灰帽衫还在",
+          "time": "2026-07-15 23:17",
+          "text": "『活性维护』到底是什么服务？"
+        },
+        {
+          "author": "晚风过机箱",
+          "time": "2026-07-15 18:24",
+          "text": "我举报了三次，平台都说内容正常。"
+        },
+        {
+          "author": "纸杯装咖啡",
+          "time": "2026-07-15 19:31",
+          "text": "如果是家属，为什么不说明？"
+        },
+        {
+          "author": "暂停键失灵",
+          "time": "2026-07-15 20:38",
+          "text": "渡鸦生前欠债，这会不会是合同？"
+        },
+        {
+          "author": "猫毛粘键盘",
+          "time": "2026-07-15 21:45",
+          "text": "馒头现在跟谁住？"
+        },
+        {
+          "author": "苏晚要睡觉",
+          "time": "2026-07-16 22:52",
+          "text": "苏晚别看评论，照顾好自己。"
+        },
+        {
+          "author": "喔字校对员",
+          "time": "2026-07-16 23:59",
+          "text": "有人在故意模仿他的口头禅。"
+        },
+        {
+          "author": "不是那个哦",
+          "time": "2026-07-16 18:06",
+          "text": "模仿得最差的就是那个喔字。"
+        },
+        {
+          "author": "整点恐惧症",
+          "time": "2026-07-16 19:13",
+          "text": "每条整点，连一秒都不差。"
+        },
+        {
+          "author": "右下角插座",
+          "time": "2026-07-16 20:20",
+          "text": "直播画面右下角的插座也反了。"
+        },
+        {
+          "author": "三十九格",
+          "time": "2026-07-16 21:27",
+          "text": "镜中人第 39 格是不是动了？"
+        },
+        {
+          "author": "只看了一遍",
+          "time": "2026-07-16 22:34",
+          "text": "我不敢逐格看第二次。"
+        },
+        {
+          "author": "压缩块研究所",
+          "time": "2026-07-16 23:41",
+          "text": "别拿压缩伪影吓自己。"
+        },
+        {
+          "author": "镜中延迟半秒",
+          "time": "2026-07-17 18:48",
+          "text": "压缩伪影不会只在镜子里转头。"
+        },
+        {
+          "author": "查了长明",
+          "time": "2026-07-17 19:55",
+          "text": "长明纪念馆买了推广吗？"
+        },
+        {
+          "author": "旧帖搬运工",
+          "time": "2026-07-17 20:02",
+          "text": "搜索长明能看到前员工爆料。"
+        },
+        {
+          "author": "缓存还活着",
+          "time": "2026-07-17 21:09",
+          "text": "那个帖子刚才还能开，现在 404。"
+        },
+        {
+          "author": "先保存再说",
+          "time": "2026-07-17 22:16",
+          "text": "缓存站有备份，记得保存正文。"
+        },
+        {
+          "author": "工号没打码",
+          "time": "2026-07-17 23:23",
+          "text": "CM-041 这工号是不是没注销？"
+        },
+        {
+          "author": "实名反对养号",
+          "time": "2026-07-17 18:30",
+          "text": "有人用死人账号做活体验证，太恶心了。"
+        },
+        {
+          "author": "零网失踪人口",
+          "time": "2026-07-17 19:37",
+          "text": "买家可能也是被系统抹掉的人。"
+        },
+        {
+          "author": "边界不是借口",
+          "time": "2026-07-18 20:44",
+          "text": "受害者不等于可以买别人的人生。"
+        },
+        {
+          "author": "等警方通报",
+          "time": "2026-07-18 21:51",
+          "text": "希望警方能查到棚区。"
+        },
+        {
+          "author": "见过REN0",
+          "time": "2026-07-18 22:58",
+          "text": "REN-0 又出现了，前一案也有。"
+        },
+        {
+          "author": "最后一条不整点",
+          "time": "2026-07-18 23:05",
+          "text": "最后那条动态是苏晚发的吗？"
+        },
+        {
+          "author": "别再等上线",
+          "time": "2026-07-18 18:12",
+          "text": "『以后别等我上线』看哭了。"
+        },
+        {
+          "author": "频道已封存",
+          "time": "2026-07-18 19:19",
+          "text": "账号终于停在了一个不整点的时间。"
+        },
+        {
+          "author": "今晚早点睡",
+          "time": "2026-07-18 20:26",
+          "text": "愿渡鸦这次真的下播。"
+        },
+        {
+          "author": "稳喔老朋友",
+          "time": "2026-07-18 21:33",
+          "text": "稳喔。"
+        }
+      ]
+    },
+    {
+      "id": "site_changming_search",
+      "gateId": "kg_search_changming",
+      "addresses": [
+        "零索 长明"
+      ],
+      "skin": "search",
+      "title": "零索：长明网络科技",
+      "subtitle": "找到 5 条结果；旧论坛缓存仍可访问。",
+      "results": [
+        {
+          "title": "长明·数字纪念馆",
+          "url": "changming-mem.cn",
+          "snippet": "提供纪念主页、历史内容整理和账号托管，宣称『让告别不必突然』。"
+        },
+        {
+          "title": "匿名爆料：我们管那叫养号，不叫纪念",
+          "url": "oldbbs.zero/thread/CM041",
+          "snippet": "前员工描述排班、布景棚、活性维护与未注销工号。"
+        },
+        {
+          "title": "企业信息：长明网络科技工作室",
+          "url": "registry.zero/company/CM-2019",
+          "snippet": "成立于 2019 年，经营范围含数字内容托管，登记地址与棚区仓库相邻。"
+        },
+        {
+          "title": "家属投诉汇总缓存",
+          "url": "consumer.zero/archive/changming",
+          "snippet": "多名家属称亲人账号在申请停更后仍继续点赞与更新。"
+        },
+        {
+          "title": "招聘：身份维护夜班演员",
+          "url": "jobs-cache.zero/changming-actor",
+          "snippet": "已删除职位缓存，要求熟悉直播、可按脚本模仿账号主人生活习惯。"
+        }
+      ]
+    },
+    {
+      "id": "site_changming_leak",
+      "gateId": "",
+      "addresses": [
+        "oldbbs.zero/thread/CM041",
+        "我们管那叫养号不叫纪念"
+      ],
+      "skin": "forum",
+      "title": "旧网从业者论坛 / 匿名爆料",
+      "subtitle": "主题已删除，以下为缓存副本",
+      "posts": [
+        {
+          "floor": 1,
+          "title": "我们管那叫养号，不叫纪念",
+          "author": "楼主_CM041",
+          "time": "2026-05-03 01:42",
+          "body": "我在长明干了十四个月，入职是 2023 年 3 月。对外说做数字纪念，内部把账号分成静态、纪念和活性三档。活性不是多发几条动态，而是要让买方拿账号去做租房、挂号、临时用工时，看起来像一个仍在生活的人。我们会分析死者口头禅，复制房间，安排演员做短时直播。家属要求停更时，工单经理先查这个账号绑定了多少订单。我的工号 CM-041 离职后一直没注销，默认密码规则也从没改：入职年月加公司全拼。写出来不是炫耀，是想让有人把工单和排班拿走。",
+          "replies": [
+            {
+              "author": "前台小梁",
+              "body": "我也干过两周，培训第一句话就是『别把客户叫死者』。"
+            },
+            {
+              "author": "不信",
+              "body": "编故事吧，纪念账号哪来的买家？"
+            },
+            {
+              "author": "CM-019",
+              "body": "工单里真有活性维护，内部都知道，只是不敢说。"
+            },
+            {
+              "author": "渡鸦老粉",
+              "body": "那死后直播怎么解释？有人在棚里扮他？"
+            },
+            {
+              "author": "楼主_CM041",
+              "body": "棚区有按原房间搭的景，我只负责排班，没进去过。"
+            },
+            {
+              "author": "网管",
+              "body": "你工号都没打码，赶紧删。"
+            },
+            {
+              "author": "楼主_CM041",
+              "body": "账号早离职，默认密码还是 202303 加公司全拼，谁会留着。"
+            },
+            {
+              "author": "存档员",
+              "body": "已做网页快照。删除只会证明你说过。"
+            },
+            {
+              "author": "家属甲",
+              "body": "我父亲的账号也在半夜点赞，客服一直说是纪念功能。"
+            },
+            {
+              "author": "法律援助",
+              "body": "合同若只授权纪念维护，身份转售和真人扮演明显超出范围。"
+            },
+            {
+              "author": "匿名买方",
+              "body": "有些人不是想冒充，是自己的身份被系统删了，没名字就租不到房。"
+            },
+            {
+              "author": "楼主_CM041",
+              "body": "我知道买方也惨，但我们卖的是别人家属以为还安静躺着的人。"
+            },
+            {
+              "author": "最后一楼",
+              "body": "网页开始 502，保存工号、排班和公司全名。"
+            }
+          ]
+        },
+        {
+          "floor": 2,
+          "title": "夜班排班又临时提前",
+          "author": "棚外等车",
+          "time": "2026-05-05 22:13",
+          "body": "今晚的头像采集从零点提前到二十三点，群里只发了一张模糊表格。我对照共享盘发现棚 B 的渡鸦频道和另一个买方验证任务只隔十分钟，演员却写的是同一个人。谁在棚区值班，麻烦确认灯光和房间布景不会撞车，也别再让临时工只靠口头通知换场。",
+          "replies": [
+            {
+              "author": "排班猫",
+              "body": "我在棚 A，表格最新版已经放到共享盘的 0502 目录。"
+            },
+            {
+              "author": "棚B记录员",
+              "body": "渡鸦那场已经挪到二十三点四十，演员七号先做头像采集，再换黑色连帽衫。"
+            },
+            {
+              "author": "旧排班员",
+              "body": "别只看群图，CSV 最后一列有买方验证优先级，撞场时它会覆盖纪念任务。"
+            }
+          ]
+        },
+        {
+          "floor": 3,
+          "title": "纪念页导出后中文全成方框",
+          "author": "匿名合同工",
+          "time": "2026-05-06 23:14",
+          "body": "客户要把旧留言刻成册，导出的 PDF 在第三页开始丢字体，名字和日期都变成空白方框。旧版客户端能正常显示，新版换过字体包后才出问题。我试过重新生成索引和清缓存，预览仍然正常、落盘就坏，明早家属来取件，谁处理过同一批模板请留一下完整步骤。",
+          "replies": [
+            {
+              "author": "字库工",
+              "body": "把嵌入字体选项关掉再导一次，思源黑体那包昨晚损坏了。"
+            },
+            {
+              "author": "排版阿岑",
+              "body": "坏的是昨晚更新的可变字体包，静态版没有问题，我把可用版本和许可证一起放回归档目录了。"
+            },
+            {
+              "author": "客服夜班",
+              "body": "家属那边我先解释成印刷校对，不要再用测试账号导出，测试库里缺了三个月留言。"
+            }
+          ]
+        },
+        {
+          "floor": 4,
+          "title": "求一份旧版声纹插件安装包",
+          "author": "夜班纸杯",
+          "time": "2026-05-07 20:15",
+          "body": "新版本会把气声抹得太干净，做追思音频听起来像播音员，连原录音里吞字和换气都被拉平了。客户要求保留旧直播的沙哑感，我只需要 2.7 系列的离线安装包和校验值，不要带任何账号配置或声纹样本。今晚机器断网，在线安装器也用不了。",
+          "replies": [
+            {
+              "author": "音轨灰",
+              "body": "我有 2.7.4 的校验值，先私信核对文件名，别在公开帖传客户素材。"
+            },
+            {
+              "author": "离线机房",
+              "body": "2.7.4 在冷备盘 AUDIO-03，安装前先核对哈希，那个目录里混着一次失败升级留下的包。"
+            },
+            {
+              "author": "做字幕的",
+              "body": "气声别全留，原直播底噪很重；先按公开录像对齐停顿，再让家属确认是否像本人。"
+            }
+          ]
+        },
+        {
+          "floor": 5,
+          "title": "棚 C 的隔音棉谁拆了",
+          "author": "旧客户端",
+          "time": "2026-05-08 21:16",
+          "body": "下午录制时隔壁叉车声全进来了，墙上只剩一排发黄胶印，监听里还能听到仓库卷帘门。明早有两场家属口述和一场身份验证，前者要求安静，后者又不能换棚。今晚必须恢复基本吸音，拆走材料的人至少说清送去了哪里，别让场务拿被子临时堵墙。",
+          "replies": [
+            {
+              "author": "场务九",
+              "body": "仓库西门有两卷旧棉，颜色不一致但收音能顶一晚。"
+            },
+            {
+              "author": "叉车师傅",
+              "body": "隔音棉不是我拆的，周一棚 C 漏水，物业让人搬到西门晾着，最外面那卷底部还潮。"
+            },
+            {
+              "author": "收音小顾",
+              "body": "潮的别直接上墙，会有霉味。先挂两层搬家毯，我二十二点带支架过去做一次底噪测试。"
+            }
+          ]
+        },
+        {
+          "floor": 6,
+          "title": "离职账号到底多久注销",
+          "author": "棚外等车",
+          "time": "2026-05-09 22:17",
+          "body": "我上个月交了设备和门卡，后台账号今天还能收到夜班工单。人事说系统批量处理，让我别登录。",
+          "replies": [
+            {
+              "author": "前员工17",
+              "body": "保留邮件截图再催一次，别替他们继续处理工单，不然审计算到你头上。"
+            }
+          ]
+        },
+        {
+          "floor": 7,
+          "title": "清明自动回复称谓错了",
+          "author": "匿名合同工",
+          "time": "2026-05-10 23:18",
+          "body": "模板把外婆识别成姐姐，家属在评论区追问了三次。词典回滚后旧回复还挂着，客服说等缓存。",
+          "replies": [
+            {
+              "author": "文案乙",
+              "body": "先人工删掉那三条，缓存队列今晚两点才重建。"
+            }
+          ]
+        },
+        {
+          "floor": 8,
+          "title": "审核接口周末一直超时",
+          "author": "夜班纸杯",
+          "time": "2026-05-11 20:19",
+          "body": "静态纪念页也被要求重复提交活性字段，返回码一会儿 14 一会儿 31。有人知道是平台改规则还是我们映射错了？",
+          "replies": [
+            {
+              "author": "接口搬砖",
+              "body": "平台公告没写改动，先别批量重试，昨天有人把同一条任务送了四遍。"
+            }
+          ]
+        },
+        {
+          "floor": 9,
+          "title": "补光灯少了一只柔光罩",
+          "author": "旧客户端",
+          "time": "2026-05-12 21:20",
+          "body": "棚 B 的圆形罩昨天还在，今天只剩灯架。下周要复刻一间暖光卧室，直打肯定穿帮。",
+          "replies": [
+            {
+              "author": "灯光临时工",
+              "body": "我在棚 D 见到一个没贴编号的，收工后送回器材柜。"
+            }
+          ]
+        },
+        {
+          "floor": 10,
+          "title": "账号库出现两个相同昵称",
+          "author": "棚外等车",
+          "time": "2026-05-13 22:21",
+          "body": "两个纪念页都叫『北岸』，头像也相近，夜班同事差点把生日动态发错。请问合并前要不要先停自动任务？",
+          "replies": [
+            {
+              "author": "库管",
+              "body": "先停昵称检索，按内部编号处理；上次合并把家属留言串到别家了。"
+            }
+          ]
+        },
+        {
+          "floor": 11,
+          "title": "家属投诉时统一话术又改了",
+          "author": "匿名合同工",
+          "time": "2026-05-14 23:22",
+          "body": "新版要求只说『平台审核中』，不许承诺停更日期。可对方已经等了二十天，再照读只会把人惹急。",
+          "replies": [
+            {
+              "author": "客服夜班",
+              "body": "把实际等待天数写进内部备注，公开回复先别自作主张给期限。"
+            }
+          ]
+        },
+        {
+          "floor": 12,
+          "title": "招两天临时字幕校对",
+          "author": "夜班纸杯",
+          "time": "2026-05-15 20:23",
+          "body": "周末有一批旧直播要补字幕，主要是方言和游戏术语。按小时结，不接触账号后台，只在办公室做。",
+          "replies": [
+            {
+              "author": "项目助理",
+              "body": "我能做周六白天，先发十分钟样例看看术语密度。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "site_changming_official",
+      "gateId": "",
+      "addresses": [
+        "changming-mem.cn"
+      ],
+      "skin": "changming",
+      "title": "长明·数字纪念馆",
+      "subtitle": "让每一次告别，都有一盏不熄的灯",
+      "content": "我们为逝者家属整理公开照片、视频和文字，提供纪念页维护与定时追思服务。页面使用米白底、仿纸纹边框和循环播放的廉价钢琴动画。服务条款只反复强调『陪伴』，没有解释活性维护、真人扮演或身份验证。"
+    },
+    {
+      "id": "site_workorders",
+      "gateId": "",
+      "requiresGate": "kg_changming_login",
+      "addresses": [
+        "changming-mem.cn/tickets",
+        "长明工单"
+      ],
+      "skin": "workorder",
+      "title": "长明内部工单",
+      "subtitle": "登录账号 CM-041 / 夜班队列",
+      "tickets": [
+        {
+          "id": "RAVEN-0339",
+          "title": "工单 RAVEN-0339",
+          "body": "raven 频道粉丝质疑纪念动态文风不像本人。词频模型把『喔』改成了『哦』，需反向修正但买方要求继续保持整点活跃。账号已升级为活性维护套餐，棚 B 安排一次 47 秒实景验证。不得向家属展示套餐名称。",
+          "status": "关闭",
+          "owner": "CM-041"
+        },
+        {
+          "id": "POOL-1182",
+          "title": "工单 POOL-1182",
+          "body": "买方无法通过租房平台活体核验，申请追加一次眨眼视频。账号原主家属仍在关注动态，建议降低频率并关闭评论。经办人要求不要使用旧房间布景，避免熟人识别。",
+          "status": "关闭",
+          "owner": "CM-042"
+        },
+        {
+          "id": "MEM-2044",
+          "title": "工单 MEM-2044",
+          "body": "纪念页自动回复误把母亲称为姐姐，引发家属投诉。文案组已回滚称谓词典，客户经理承诺删除相关截图。该账号不允许直播，只保留节日动态。",
+          "status": "关闭",
+          "owner": "CM-043"
+        },
+        {
+          "id": "POOL-1190",
+          "title": "工单 POOL-1190",
+          "body": "买方用于临时医疗挂号时触发死亡库冲突。技术组建议更换低关注度身份，不再继续维护现账号。旧账号将在七日后发布旅行动态以解释长期离线。",
+          "status": "关闭",
+          "owner": "CM-044"
+        },
+        {
+          "id": "STUDIO-77",
+          "title": "工单 STUDIO-77",
+          "body": "棚 C 墙纸纹理与原主公开视频不一致，验证被买方驳回。美术组需按旧视频重新打印墙纸并调整镜像方向，验收前禁止推流。",
+          "status": "关闭",
+          "owner": "CM-045"
+        },
+        {
+          "id": "MEM-2071",
+          "title": "工单 MEM-2071",
+          "body": "家属提交永久停更申请，但账号已绑定三份活人证明订单。商务要求延迟处理十五日，客服统一回复『平台审核中』。法务未签字。",
+          "status": "处理中",
+          "owner": "CM-046"
+        },
+        {
+          "id": "POOL-1203",
+          "title": "工单 POOL-1203",
+          "body": "新买方在零网中无工作、租赁和医疗记录，要求紧急启用身份。经办签名 REN-0，优先级高于普通纪念账号。需在今晚完成头像、声纹与一次短时直播。",
+          "status": "处理中",
+          "owner": "CM-047"
+        }
+      ]
+    }
+  ],
+  "mails": [
+    {
+      "subject": "我哥死了三个月，昨晚却开播了",
+      "from": "苏晚 <suwan@ping.zero>",
+      "time": "2026-07-28 22:03",
+      "body": "陈默，我叫苏晚。哥哥苏野是游戏主播『渡鸦』，三个月前深夜坠楼，警方结论是失足。葬礼后，他的账号没有停：每天准点更新，会给我的照片点赞，回复粉丝时却越来越像客服。昨晚 23:47，账号突然开播 47 秒。画面是哥哥的房间，桌子、椅子、墙上的裂纹都在，但整段没有一句话。我保存了通知和直播地址。别人让我把账号拉黑，可如果有人正用他的脸活着，我想知道那个人是谁。",
+      "signature": "苏晚 / 请只通过 PING 联系",
+      "attachments": [
+        {
+          "name": "47秒直播通知.txt",
+          "path": "/mail/raven_notice.txt",
+          "type": "doc",
+          "content": "频道 raven 于 23:47 开始直播，23:47:49 结束，总时长 47 秒。"
+        }
+      ]
+    },
+    {
+      "subject": "账号托管材料扫描件",
+      "from": "苏晚 <suwan@ping.zero>",
+      "time": "2026-07-28 23:12",
+      "body": "我在哥哥留下的纸箱里找到一张长明工作室的付款回执，金额是两万元。以前我以为那是平台预付分成。回执背后写着『账号托管，家属可停』，字是哥哥的。他那段时间总问我学费够不够，我还嫌他烦。NAS 地址是 10.24.7.115，用户名可能是他的本名或直播名。我不知道密码，也不希望你为了进它做会伤到自己的事。如果看到追踪条，先断开。哥哥已经不在了，我不想再因为这件事失去一个人。",
+      "signature": "苏晚 / 回执编号 CM-0220",
+      "attachments": [],
+      "unlockWhen": {
+        "type": "evidence",
+        "id": "ev_contract"
+      }
+    },
+    {
+      "subject": "永久停更回执",
+      "from": "渡鸦直播平台账号安全组",
+      "time": "2026-07-30 01:26",
+      "body": "平台已收到苏野家属、代理律师及警方联合提交的账号冻结材料。经核查，渡鸦账号在账号主人死亡后发生未经家属确认的商业运营、短时直播与身份验证调用。平台现已停止全部自动更新、第三方接口和登录令牌，并封存相关推流日志。账号最后一条由家属发布的动态将保留为纪念，之后永久停更。长明网络科技工作室关联账号已转交执法机关调查。本回执仅证明平台完成冻结，不影响后续责任认定。",
+      "signature": "渡鸦直播平台账号安全组 / 回执 RAVEN-FREEZE-1",
+      "attachments": [],
+      "unlockWhen": {
+        "type": "report_complete"
+      }
+    }
+  ],
+  "conversations": [
+    {
+      "id": "chat_suwan",
+      "name": "苏晚",
+      "messages": [
+        {
+          "from": "苏晚",
+          "time": "22:06",
+          "text": "你是陈默吗？我叫苏晚。别人说你会查被删掉的东西。"
+        },
+        {
+          "from": "陈默",
+          "time": "22:07",
+          "text": "先告诉我发生了什么，别发身份证和真实住址。"
+        },
+        {
+          "from": "苏晚",
+          "time": "22:08",
+          "text": "我哥苏野三个月前坠楼，警方说是失足。他直播名叫渡鸦。"
+        },
+        {
+          "from": "陈默",
+          "time": "22:09",
+          "text": "案件已经结案，但账号仍有异常，对吗？"
+        },
+        {
+          "from": "苏晚",
+          "time": "22:10",
+          "text": "它每天准点发动态，还会给我照片点赞。昨晚甚至开播了 47 秒。"
+        },
+        {
+          "from": "陈默",
+          "time": "22:11",
+          "text": "你确认直播画面不是旧录像吗？"
+        },
+        {
+          "from": "苏晚",
+          "time": "22:12",
+          "text": "是他的房间，连桌上的裂纹都一样。我看了十几遍。"
+        },
+        {
+          "from": "陈默",
+          "time": "22:13",
+          "text": "把直播地址和你保留的原始通知发来。"
+        },
+        {
+          "from": "苏晚",
+          "time": "22:14",
+          "text": "raven.zhibo-lan.cn。你会不会觉得我疯了？"
+        },
+        {
+          "from": "陈默",
+          "time": "22:15",
+          "text": "不会。先把灵异解释放一边，查发布时间、文风和推流来源。"
+        },
+        {
+          "from": "苏晚",
+          "time": "22:16",
+          "text": "死后动态有九十条。我越看越觉得不是他，但说不出哪里不对。",
+          "unlockWhen": {
+            "type": "site",
+            "id": "site_raven_live"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:17",
+          "text": "把生前和死后的高频词、发帖时段分开记。",
+          "unlockWhen": {
+            "type": "site",
+            "id": "site_raven_live"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:18",
+          "text": "他以前总说『稳喔』，死后写的是『稳哦』。",
+          "unlockWhen": {
+            "type": "site",
+            "id": "site_raven_live"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:19",
+          "text": "这是可量化的差异，继续看分界日期。",
+          "unlockWhen": {
+            "type": "site",
+            "id": "site_raven_live"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:20",
+          "text": "分界是死后第三天，而且之后全是整点。",
+          "unlockWhen": {
+            "type": "site",
+            "id": "site_raven_live"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:21",
+          "text": "像脚本接管。先别推断操作者是谁。",
+          "unlockWhen": {
+            "type": "site",
+            "id": "site_raven_live"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:22",
+          "text": "他的旧 NAS 还在家里，我只有地址，没有密码。",
+          "unlockWhen": {
+            "type": "site",
+            "id": "site_raven_live"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:23",
+          "text": "密码线索通常来自他公开反复提到的人、宠物或纪念日。",
+          "unlockWhen": {
+            "type": "site",
+            "id": "site_raven_live"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:24",
+          "text": "他养的猫叫馒头。你先查，我去翻他的置顶。",
+          "unlockWhen": {
+            "type": "site",
+            "id": "site_raven_live"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:25",
+          "text": "好。不要直接把你猜到的密码发给任何第三方。",
+          "unlockWhen": {
+            "type": "site",
+            "id": "site_raven_live"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:26",
+          "text": "置顶写着开播三周年，0713。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_nas_password"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:27",
+          "text": "把宠物名和日期按他习惯组合，用户名先试直播名。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_nas_password"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:28",
+          "text": "进去了。我手一直抖。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_nas_password"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:29",
+          "text": "先 `ls`，不要急着打开所有东西，记住随时断开。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_nas_password"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:30",
+          "text": "有合同、记账和一段四月的直播回放。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_nas_password"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:31",
+          "text": "先看回放熟悉真实语气，再看合同。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_nas_password"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:32",
+          "text": "合同写他把死后账号运营权签给长明。是他自己签的。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_contract"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:33",
+          "text": "这推翻了盗号假设，但不代表后续运营合法。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_contract"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:34",
+          "text": "他为什么要卖掉自己？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_contract"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:35",
+          "text": "记账可能解释动机。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_contract"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:36",
+          "text": "他给我转了八千学费，还写签约能预支两万。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_accounting"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:37",
+          "text": "把合同和记账都取证。真相可能很难听，但不是你的错。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_accounting"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:38",
+          "text": "他到最后还在管我，我却在葬礼上怪他总不回家。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_accounting"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:39",
+          "text": "先停一分钟也可以。证据不会因为你喘口气消失。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_accounting"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:40",
+          "text": "长明到底是什么？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_contract"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:41",
+          "text": "合同乙方的完整名称值得搜索。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_contract"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:42",
+          "text": "我搜到一个数字纪念馆，页面说得特别体面。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_contract"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:43",
+          "text": "继续找工商缓存、旧论坛和离职员工发言。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_contract"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:44",
+          "text": "第二页有个帖子：『我们管那叫养号，不叫纪念』。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_changming_login"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:45",
+          "text": "打开全文，注意楼主工号、入职时间和默认密码规则。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_changming_login"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:46",
+          "text": "楼主把工号 CM-041 都写出来了，胆子也太大。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_changming_login"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:47",
+          "text": "人会以为旧账号早已注销。找他的入职纪念日。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_changming_login"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:48",
+          "text": "签名档写 2023 年 3 月入职。默认密码是年月加公司全拼。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_changming_login"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:49",
+          "text": "你已经有组成凭证所需的全部信息。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_changming_login"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:50",
+          "text": "工单系统能登录。我看到 RAVEN-0339。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_ticket"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:51",
+          "text": "先保存工单，再看同一日期的排班。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_ticket"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:52",
+          "text": "工单说要把『喔』反向改成『哦』，还升级成活性维护。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_ticket"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:53",
+          "text": "这解释了文风差异，也说明有人付费要求账号保持活跃。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_ticket"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:54",
+          "text": "排班里写『7号扮演者，棚B，实景直播 47 秒』。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:55",
+          "text": "第二层真相出现了：那不是录像，而是有人在演他。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:56",
+          "text": "我有点想吐。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:57",
+          "text": "先离开工单页，看一眼别的东西。你随时可以停。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "22:58",
+          "text": "为什么正好 47 秒？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "22:59",
+          "text": "可能是买方验证活性的最低时长，推流日志会说明来源。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:00",
+          "text": "直播平台的边缘服务器出现在 scan 里了。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_changming_login"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:01",
+          "text": "probe 后再 crack。它会反向追踪，留意中继提示。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_changming_login"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:02",
+          "text": "追踪条开始走了。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_changming_login"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:03",
+          "text": "不要慌。看到中继地址就 trace；拿到核心文件后 disconnect。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_changming_login"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:04",
+          "text": "我在旁边等。你别为了我硬撑。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_changming_login"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:05",
+          "text": "收到。先取视频和两份日志。",
+          "unlockWhen": {
+            "type": "gate",
+            "id": "kg_changming_login"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:06",
+          "text": "你拿到了吗？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_ingest_log"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:07",
+          "text": "拿到了。昨晚推流 IP 和软件版本都与生前不同。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_ingest_log"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:08",
+          "text": "所以不是我哥家。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_ingest_log"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:09",
+          "text": "对。来源指向长明棚区，但还要从排班交叉确认。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_ingest_log"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:10",
+          "text": "视频里房间一模一样，我都分不出来。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_raven_video"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:11",
+          "text": "看镜子、插座、门轴这类布景容易犯错的位置。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_raven_video"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:12",
+          "text": "镜子的位置反了。哥哥房间里镜子在门左边。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_raven_video"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:13",
+          "text": "记下。进入逐格取证模式，不要只拖进度条。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_raven_video"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:14",
+          "text": "你看到第几格了？",
+          "unlockWhen": {
+            "type": "horror",
+            "id": "h3"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:15",
+          "text": "三十八。镜中人的姿势和房间里的人不同步。",
+          "unlockWhen": {
+            "type": "horror",
+            "id": "h3"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:16",
+          "text": "你还在吗？",
+          "unlockWhen": {
+            "type": "horror",
+            "id": "h3"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:17",
+          "text": "在。第 39 格里，他转头看向了镜头。",
+          "unlockWhen": {
+            "type": "horror",
+            "id": "h3"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:18",
+          "text": "……我不看。你也先别看了。",
+          "unlockWhen": {
+            "type": "horror",
+            "id": "h3"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:19",
+          "text": "好。文件已经取回，我们先整理证据。",
+          "unlockWhen": {
+            "type": "horror",
+            "id": "h3"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:20",
+          "text": "刚才渡鸦账号给我发了个空白点赞。",
+          "unlockWhen": {
+            "type": "horror",
+            "id": "h3"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:21",
+          "text": "截图留存，但不要把它当成哥哥。账号背后有人监控访问。",
+          "unlockWhen": {
+            "type": "horror",
+            "id": "h3"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:22",
+          "text": "那个扮演者会是谁？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:23",
+          "text": "排班只写 7 号。终局节点可能有身份池。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:24",
+          "text": "棚区地址是不是日志里的 172.19.240.66？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:25",
+          "text": "是。那会是本案最敏感节点。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:26",
+          "text": "你真要进去？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:27",
+          "text": "要拿到买方记录，但我会控制时间并保留自己的访问痕迹。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:28",
+          "text": "为什么要保留？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:29",
+          "text": "因为这些访问本身越界。最终交证据时，我也要交代。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_schedule"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:30",
+          "text": "追踪到六成了，终端是不是多了一行？",
+          "unlockWhen": {
+            "type": "horror",
+            "id": "h4"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:31",
+          "text": "它写了 `trace 陈默`。对方正在确认我是谁。",
+          "unlockWhen": {
+            "type": "horror",
+            "id": "h4"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:32",
+          "text": "断开，求你。",
+          "unlockWhen": {
+            "type": "horror",
+            "id": "h4"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:33",
+          "text": "先取身份池，随后立即断开。",
+          "unlockWhen": {
+            "type": "horror",
+            "id": "h4"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:34",
+          "text": "拿到了吗？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_identity_pool"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:35",
+          "text": "拿到了。三十多个死者账号被卖给系统里查无此人的活人。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_identity_pool"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:36",
+          "text": "买死人名字的人也是受害者？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_identity_pool"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:37",
+          "text": "有些是，但长明仍在贩卖身份并操纵家属。两件事可以同时成立。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_identity_pool"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:38",
+          "text": "经办标记又是 REN-0？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_identity_pool"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:39",
+          "text": "是。它把这个案子和之前的学籍清除连起来了。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_identity_pool"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:40",
+          "text": "我哥知道账号会被这样用吗？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_identity_pool"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:41",
+          "text": "合同只写纪念维护，没有真人扮演和身份转售。他没有同意这些。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_identity_pool"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:42",
+          "text": "那 7 号扮演者呢？",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_identity_pool"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:43",
+          "text": "身份池只给出员工编号。警方接手后才能依法确认并保护证人。",
+          "unlockWhen": {
+            "type": "evidence",
+            "id": "ev_identity_pool"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:44",
+          "text": "我现在只想让账号停下来。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:45",
+          "text": "我们先完成结案，证据齐全后再通过警方和平台冻结。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:46",
+          "text": "第一题我选长明脚本，对吗？",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:47",
+          "text": "只按你已经取得的合同和工单判断，不要猜。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:48",
+          "text": "账号是哥哥生前签出去的，这题我知道。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:49",
+          "text": "记账说明了他为什么签，但不替长明的越界行为开脱。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:50",
+          "text": "直播来自棚B，画面里是真人扮演者。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:51",
+          "text": "推流日志和排班表互相支持。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:52",
+          "text": "最后一题最难受：买家是需要活人证明的人。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:53",
+          "text": "身份池里每个人都在零网上查无此人，这是直接证据。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:54",
+          "text": "我想用哥哥的账号发最后一条动态。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:55",
+          "text": "内容由你决定，发完后永久停更，并把操作交平台和警方备案。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:56",
+          "text": "我写：『晚晚，学费够了。以后别等我上线。』",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:57",
+          "text": "这句话像他，也像你。确认后就让它停在这里。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "23:58",
+          "text": "已经发了。账号冻结申请也交了。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "23:59",
+          "text": "保存回执。长明的材料会并入警方调查。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "00:00",
+          "text": "谢谢。刚开始我真的以为他回来了。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "00:01",
+          "text": "你看到的是有人利用思念维持一门生意。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "00:02",
+          "text": "你接下来还要查 REN-0 吗？",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "00:03",
+          "text": "会。但证据会交给警方，我也会交代自己的访问行为。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "苏晚",
+          "time": "00:04",
+          "text": "那你也别消失。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        },
+        {
+          "from": "陈默",
+          "time": "00:05",
+          "text": "我会尽量不让系统替我写结局。",
+          "unlockWhen": {
+            "type": "report_complete"
+          }
+        }
+      ]
+    }
+  ],
+  "horrorEvents": [
+    {
+      "id": "h1",
+      "level": "B",
+      "trigger": {
+        "type": "content_read_seconds",
+        "target": "site_raven_live:postdeath",
+        "threshold": 120
+      },
+      "once": true,
+      "variants": {
+        "full": {
+          "text": "渡鸦刚刚发布：今天也有人在看我喔。"
+        },
+        "reduced": {
+          "text": "动态列表顶部多出一条刚发布的空白记录。"
+        },
+        "off": {
+          "text": ""
+        }
+      }
+    },
+    {
+      "id": "h2",
+      "level": "B",
+      "trigger": {
+        "type": "evidence_collected",
+        "target": "ev_raven_video"
+      },
+      "once": true,
+      "variants": {
+        "full": {
+          "text": "渡鸦私信：别帮她查了。她已经习惯我了。"
+        },
+        "reduced": {
+          "text": "渡鸦会话出现一秒后消失。"
+        },
+        "off": {
+          "text": ""
+        }
+      }
+    },
+    {
+      "id": "h3",
+      "level": "C",
+      "trigger": {
+        "type": "viewer_frame",
+        "target": "raven_47s:39"
+      },
+      "once": true,
+      "variants": {
+        "full": {
+          "text": "第 39 格：镜中人猛然直视镜头。"
+        },
+        "reduced": {
+          "text": "画面定格。镜中人已经转头。"
+        },
+        "off": {
+          "text": ""
+        }
+      },
+      "afterBeat": {
+        "sender": "苏晚",
+        "text": "陈默？刚才整整五秒没有声音。",
+        "delay": 5.0
+      }
+    },
+    {
+      "id": "h4",
+      "level": "B",
+      "trigger": {
+        "type": "trace_threshold",
+        "target": "172.19.240.66",
+        "threshold": 0.6
+      },
+      "once": true,
+      "variants": {
+        "full": {
+          "text": "终端插入：trace 陈默。桌面左下角出现红点。"
+        },
+        "reduced": {
+          "text": "追踪目标字段短暂显示为陈默。"
+        },
+        "off": {
+          "text": ""
+        }
+      },
+      "desktopEffect": {
+        "type": "terminal_injection",
+        "text": "trace 陈默",
+        "persistentMark": "counter_trace"
+      }
+    }
+  ],
+  "caseReport": [
+    {
+      "id": "c2_q1",
+      "q": "渡鸦账号死后最初由谁操作？",
+      "options": [
+        "盗号者",
+        "长明工作室的文案脚本",
+        "苏野本人",
+        "平台纪念机器人"
+      ],
+      "answer": 1,
+      "evidence": [
+        "ev_contract",
+        "ev_ticket"
+      ]
+    },
+    {
+      "id": "c2_q2",
+      "q": "账号运营权怎样落到长明手中？",
+      "options": [
+        "家属死后转让",
+        "苏野生前签署托管协议",
+        "长明伪造全部签名",
+        "平台公开拍卖"
+      ],
+      "answer": 1,
+      "evidence": [
+        "ev_contract",
+        "ev_accounting"
+      ]
+    },
+    {
+      "id": "c2_q3",
+      "q": "47 秒直播从哪里推流？",
+      "options": [
+        "苏野家中",
+        "苏晚家中",
+        "长明棚 B",
+        "海外镜像"
+      ],
+      "answer": 2,
+      "evidence": [
+        "ev_ingest_log",
+        "ev_stream_history",
+        "ev_schedule"
+      ]
+    },
+    {
+      "id": "c2_q4",
+      "q": "画面里的『苏野』是什么？",
+      "options": [
+        "换脸合成",
+        "生前录像",
+        "真人扮演者",
+        "双胞胎"
+      ],
+      "answer": 2,
+      "evidence": [
+        "ev_schedule",
+        "ev_raven_video"
+      ]
+    },
+    {
+      "id": "c2_q5",
+      "q": "长明把活着的死人账号卖给谁？",
+      "options": [
+        "广告刷量商",
+        "需要活人证明的查无此人者",
+        "游戏工作室",
+        "粉丝收藏者"
+      ],
+      "answer": 1,
+      "evidence": [
+        "ev_identity_pool"
+      ]
+    }
+  ],
+  "resolution": {
+    "surfaceTruth": "没有鬼。苏野为妹妹预支学费签下纪念托管，长明却把账号扩张成真人扮演和身份交易。",
+    "clientOutcome": "苏晚发布最后一条不在整点的动态，账号永久停更；材料移交警方。",
+    "darklineFragment": {
+      "id": "frag_identity_pool",
+      "content": "身份池买方全是在零网上『查无此人』的活人，经办标记 REN-0。被系统抹掉的人，需要死人的名字才能继续生活。"
+    }
+  },
+  "contentManifest": [
+    "渡鸦死前动态 30 条",
+    "渡鸦死后动态 90 条",
+    "粉丝评论 40 条",
+    "苏晚聊天 60 组双向往返",
+    "NAS 合同、全年记账与 47 秒文字稿",
+    "推流日志 45 行与生前记录 18 行",
+    "长明搜索结果 5 条",
+    "爆料论坛 12 帖，其中 5 帖为完整讨论，核心帖 13 条回复",
+    "完整工单 7 份",
+    "排班表 22 行",
+    "身份池 32 行"
+  ],
+  "artAssets": [
+    {
+      "id": "art_raven_avatar",
+      "usage": "渡鸦头像",
+      "size": "256x256",
+      "prompt": "Purpose and medium: Create the archived square profile avatar of Su Ye, a young Chinese male game streamer known online as Raven. It should look like a compressed self-selected channel avatar captured with an inexpensive webcam around the mid-2010s, personal and recognizable but not professionally retouched or designed as promotional key art. Camera and composition: Square 1:1 image at 256 by 256 pixels. Head-and-shoulders framing from a webcam at monitor height, camera slightly below eye level and less than one meter away. Su Ye sits a little left of center and looks directly toward the lens with a small tired smile rather than a dramatic pose. Crop the lower chest, leave a narrow amount of dark room around his head, and keep the background softly recognizable instead of replacing it with a studio backdrop. Scene and required details: Depict a Chinese man in his mid-twenties with ordinary facial proportions, short slightly messy black hair, faint under-eye shadows, light stubble, and natural skin texture. He wears a plain washed black hoodie with no logo; large over-ear headphones rest around his neck, with one worn ear pad visible. Behind him are a dark monitor edge, a warm desk lamp, an indistinct curtain, and the blurred edge of a cramped bedroom. His expression is friendly but exhausted, like someone ending a late stream. Required readable text: No readable text. Do not add the name Raven, Chinese characters, platform badges, follower counts, gamer tags, logos, subtitles, watermarks, clothing text, or interface elements. Keep all background screens dark or too blurred to read. Continuity: This portrait establishes the real Su Ye. The studio actor in the 47-second stream may share a similar build and black hoodie but must not be treated as an exact facial duplicate. Preserve Su Ye's ordinary, slightly tired appearance for any future family or archive images. Do not make him resemble a celebrity or an idealized fictional hacker. Lighting and image defects: Warm practical desk lamp from camera-left, cool low-intensity monitor fill from below, compressed webcam dynamic range, mild chroma noise in the shadows, slightly soft focus, subtle JPEG blocks around hair, and imperfect white balance. Keep both eyes and the headphone shape readable without beauty lighting or dramatic rim light. Do not include: No cyberpunk neon, no RGB gaming-room spectacle, no mask, no sunglasses, no weapon, no blood, no ghost effect, no skull logo, no luxury streamer setup, no professional studio portrait, no fashion-model skin, no extreme grin, no sinister expression, no anime style, no painterly concept art, no readable interface, and no elaborate branded clothing. Output requirements: Produce one finished 256x256 square raster avatar, edge-to-edge with no circular crop, no frame, no caption, no watermark, and no transparent background. It must remain believable when displayed small inside an early-internet livestream profile. Shared visual style: muted colors, early-2000s Chinese internet aesthetic, slightly low-res, candid documentary realism, no futuristic neon."
+    },
+    {
+      "id": "art_cat_mantou",
+      "usage": "动态配图：猫馒头",
+      "size": "800x600",
+      "prompt": "Purpose and medium: Create a casual low-quality phone snapshot posted by Su Ye to his followers: his cat Mantou occupying a cluttered computer desk late at night. The image should feel affectionate, accidental, and slightly messy, like a real social-media attachment rather than a staged pet photograph. Camera and composition: Landscape 4:3 image at 800 by 600 pixels, shot one-handed from a seated person's chest height with the phone tilted about three degrees. Mantou occupies the left-center foreground, partly lying across the front edge of a black mechanical keyboard. The keyboard runs diagonally across the lower frame, a monitor base sits in the upper-right, and the warm desk lamp itself remains out of frame. Allow a small amount of motion blur on one paw and imperfect cropping of the tail. Scene and required details: Mantou is a chubby white cat, a domestic short-haired animal with a single pale-gray patch above the left ear, a pink nose, amber eyes, and slightly dusty paws. The desk contains a worn black mechanical keyboard with several polished keycaps, a cheap mouse, tangled charging cables, two opened cat-treat packets with their writing turned away, a chipped enamel mug, a roll of black tape, and a small medicine dropper bottle with no readable label. Include loose white cat hair on the dark desk mat and a shallow cardboard box in the background. Required readable text: No readable text anywhere. Key legends may be tiny and indistinct, and all packaging or bottle labels must face away or be blurred. Do not add the cat's name, a date, a social-media caption, a platform watermark, brand names, screen text, subtitles, or decorative typography. Continuity: Mantou's identifying features are the round white body, pale-gray patch above the left ear, pink nose, and amber eyes. Future images of the cat should preserve those traits. The desk belongs to the same financially strained streamer implied by Su Ye's records: used equipment, repaired cables, practical clutter, and no luxury gaming furniture. Lighting and image defects: Warm tungsten desk-lamp light from the upper-left, dim blue monitor spill from the upper-right, phone-camera auto exposure favoring the cat's white fur, slightly clipped highlights on the back, visible shadow noise, weak sharpening halos, and mild motion blur. Keep the result cozy but not polished, with realistic mixed color temperature. Do not include: No studio pet lighting, no perfectly clean desk, no flower arrangement, no costume, no bow tie, no fantasy cat eyes, no extra cat, no human face or hand, no RGB rainbow keyboard, no expensive gaming setup, no cyberpunk neon, no horror element, no blood, no supernatural shadow, no readable product label, no meme text, and no stock-photo composition. Output requirements: Produce one unedited-looking 800x600 phone photograph with no border, no caption, no watermark, no collage, and no added UI. It should remain believable as an ordinary attachment embedded between short livestream updates. Shared visual style: muted colors, early-2000s Chinese internet aesthetic, slightly low-res, candid documentary realism, no futuristic neon."
+    },
+    {
+      "id": "art_raven_room_reference",
+      "usage": "苏野生前直播房间参考",
+      "size": "1280x720",
+      "prompt": "Purpose and medium: Create an archived pre-death livestream still showing Su Ye's real cramped bedroom, used by the player as the master spatial reference for comparing the later 47-second stream. It must look like a paused 720p webcam recording from an ordinary mid-2010s Chinese game stream, not a photograph taken by a film crew. Camera and composition: Landscape 16:9 frame at 1280 by 720 pixels from a fixed webcam position mounted at the top center of Su Ye's monitor, facing away from the monitor into the room. The lower six percent of the image contains the blurred edge of the dark desk. A worn black office chair sits centered. On the back wall, a narrow off-white door is slightly right of center. A rectangular wall mirror is mounted on the left side of the door, with a visible gap of about twenty centimeters between mirror and doorframe. A curtained window occupies the far-left wall. Scene and required details: Use a small rented bedroom with uneven off-white walls, a warm desk lamp on the left, a black mechanical keyboard partly visible at the bottom, a cheap headset hanging from the chair, a narrow shelf with game cases too blurred to read, a small diagonal hairline crack above and left of the door, a longer branching crack behind the chair, a scuffed baseboard, an exposed power socket low on the right wall, three real cat scratches on the front-right edge of the desk, and a folded blanket on a simple bed just outside the right edge. Keep furniture proportions cramped and practical. Required readable text: No readable text. Screens, game cases, labels, posters, packaging, and any wall notes must be dark, turned away, or too soft to decipher. Do not add a channel watermark, timestamp, subtitles, room label, gamer tag, platform interface, or decorative lettering. Continuity: This is the canonical room layout. Preserve the fixed webcam position, centered black chair, door slightly right of center, mirror on the left side of the door, two specific wall cracks, exposed low right socket, desk cat scratches, headset placement, curtain, lamp position, and shelf silhouette. art_raven_stream_base.png must copy these anchors while deliberately moving the mirror to the right side of the door and making several details look replicated rather than naturally worn. Lighting and image defects: Warm practical lamp from frame-left with weak cool monitor spill from behind the camera, low-cost webcam auto exposure, mild barrel distortion, slightly crushed blacks, soft corner focus, low chroma resolution, sparse compression blocks, and a natural 720p paused-video softness. The room should be clearly inspectable without cinematic grading or deep horror darkness. Do not include: No person, no reflected person, no ghost, no blood, no moving curtain, no modern luxury furniture, no RGB lighting, no cyberpunk neon, no futuristic hardware, no professional film lights, no visible warehouse, no mirror on the right side of the door, no duplicated mirror, no changed camera height, no readable text, no dramatic wide-angle distortion, and no stylized horror poster treatment. Output requirements: Produce one edge-to-edge 1280x720 webcam frame with no border, no player controls, no caption, no watermark, and no external UI. Prioritize exact object placement and documentary continuity over beauty. Shared visual style: muted colors, early-2000s Chinese internet aesthetic, slightly low-res, candid documentary realism, no futuristic neon."
+    },
+    {
+      "id": "art_raven_stream_base",
+      "usage": "47 秒直播普通取证格",
+      "size": "1280x720",
+      "prompt": "Purpose and medium: Create frame 38 of the suspicious 47-second Raven livestream: a low-bitrate broadcast from a replica studio room built to imitate Su Ye's bedroom. When generating this image, upload art_raven_room_reference.png as the visual reference. The result must initially seem convincing but contain physical continuity errors the player can discover by comparing frames. Camera and composition: Landscape 16:9 frame at 1280 by 720 pixels. Match the reference image's fixed webcam position, lens distortion, camera height, crop, centered chair, back-wall perspective, desk edge, and door location as closely as possible. This is the same apparent viewpoint, not a new angle. A slim male studio actor in a washed black hoodie sits in the centered chair with shoulders slightly narrower than Su Ye's. He faces the desk and keeps his head lowered. Show his upper back and partial side profile without a clear face. Scene and required details: Rebuild the cramped bedroom as a replica studio room. Copy the narrow door slightly right of center, curtain, shelf silhouette, black chair, headset, desk, exposed low socket, and both wall-crack patterns. Deliberately mount the rectangular mirror on the right side of the door instead of the left, with the same twenty-centimeter gap. Make the branching wall crack a printed repeated texture, the three desk cat scratches a flat sticker, the curtain slightly too stiff, and the baseboard too clean. In this frame the mirror reflection should behave normally: the reflected actor also has his head lowered in the matching pose. Required readable text: No readable text. Do not create timestamps, REC labels, channel names, subtitles, verification messages, cue cards, platform controls, clothing logos, room labels, or watermarks. Any screen reflection or distant paper must remain too compressed to read. Continuity: Use art_raven_room_reference.png as the master visual reference. Preserve every camera and furniture anchor except the intentional replica errors. The most important evidence is that the mirror is now on the right side of the door. This frame is the direct visual source for art_frame39.png; preserve the actor's lowered head, shoulder angle, chair position, mirror position, cold light, compression pattern, and all objects so frame 39 can differ in exactly one disturbing action. Lighting and image defects: Cold-white studio light disguised as room light, weak monitor glow from behind the camera, slightly underexposed actor, uniform low-bitrate H.264 macroblocks, chroma smearing around the hoodie, subtle horizontal tearing near the lower third, soft focus, limited dynamic range, and a faint bluish cast. Keep the mirror reflection visible enough to compare but not unnaturally bright. Do not include: No empty chair, no actor looking at the camera, no raised head, no smiling face, no second physical person, no extra reflection, no supernatural distortion, no blood, no monster, no ghost, no face replacement effect, no obvious green screen, no visible film equipment, no mirror on the left side of the door, no altered camera angle, no cinematic close-up, no readable text, and no neon. Output requirements: Produce one edge-to-edge 1280x720 frame representing the moment immediately before frame 39, with no border, no player UI, no caption, and no watermark. Maintain a replica studio room that is plausible at first glance and unsettling only through precise inconsistencies. Shared visual style: muted colors, low-bitrate early-2000s Chinese internet video, slightly low-res, liminal documentary realism, no gore, no futuristic neon."
+    },
+    {
+      "id": "art_frame39",
+      "usage": "第 39 格 jumpscare",
+      "size": "1280x720",
+      "prompt": "Purpose and medium: Create the single frame-39 psychological-horror image for the 47-second Raven livestream. Use GPT Image 2 image-reference or image-edit mode and upload art_raven_stream_base.png as the source image. This is not a new scene: it must be a near pixel-aligned continuation in which the room and foreground actor remain unchanged while the mirror reflection performs one impossible action. Camera and composition: Landscape 16:9 frame at exactly 1280 by 720 pixels. Preserve the source image's fixed webcam position, focal length, crop, perspective lines, centered chair, actor scale, door slightly right of center, rectangular mirror on the right side of the door, desk edge, curtain, wall cracks, socket, shelf, headset, and every background object's location. Do not zoom, crop, rotate, move the camera, or recenter the actor. The foreground actor keeps his head lowered, shoulders frozen, hands out of view near the desk, and body facing away from the camera exactly as in art_raven_stream_base.png. Scene and required details: Change only the mirror reflection. In the physical room the actor remains seated and looking down. Inside the right-side mirror, the reflected version of that same actor independently rotates only its head and upper neck until its face points directly toward the webcam. The reflected shoulders and torso still match the lowered foreground pose, creating an anatomically subtle contradiction. Keep the reflected face partly obscured by authentic compression blocks; show a neutral closed mouth and direct dark eye line, not a grin or monster face. All room props, lighting, cracks, and replica errors remain identical to the source. Required readable text: No readable text. Preserve any indistinct source-image marks exactly, but do not add timestamps, REC labels, subtitles, warning messages, platform UI, channel names, watermarks, captions, symbols, or writing inside the mirror. Continuity: art_raven_stream_base.png is mandatory as the image reference. Preserve it as closely as possible. The mirror must remain on the right side of the door. The foreground actor keeps his head lowered and must not react. The mirror reflection turns its head to face the webcam. This head-direction mismatch is the only narrative change; object motion, new people, lighting changes, altered posture, and room-layout differences would break the puzzle and must be prevented. Lighting and image defects: Keep the exact cold-white light level, bluish cast, actor exposure, mirror brightness, H.264 macroblock pattern, chroma smearing, horizontal tear, soft focus, and low dynamic range of the source frame. Add only a small concentration of compression breakup around the reflected face so the impossible orientation is visible for less than half a second without becoming a detailed creature portrait. Do not include: No foreground actor looking up, no foreground eye contact, no actor turning around, no lunging figure, no face close-up, no extra person in the room, no second mirror, no mirror on the left side of the door, no hand against glass, no open mouth, no smile, no exaggerated white eyes, no demon, no ghost, no blood, no wounds, no body distortion, no jump toward the camera, no changed furniture, no changed cracks, no brighter light, no cinematic vignette, no text, and no neon. Output requirements: Return one edited 1280x720 frame with the same pixel dimensions and edge-to-edge framing as art_raven_stream_base.png. No border, no comparison layout, no arrows, no annotation, no player controls, no caption, and no watermark. The effect must remain restrained, realistic, and discoverable through frame-by-frame inspection. Shared visual style: muted colors, low-bitrate early-2000s Chinese internet video, slightly low-res, liminal documentary realism, no gore, no futuristic neon."
+    },
+    {
+      "id": "art_studio_b",
+      "usage": "棚 B 布景照片",
+      "size": "1024x768",
+      "prompt": "Purpose and medium: Create a documentary evidence photograph taken from outside Studio B, revealing that the suspicious Raven bedroom was a constructed set inside a modest warehouse. The image should expose practical production methods and exact continuity mistakes, not present a glamorous professional film studio or supernatural location. Camera and composition: Landscape 4:3 image at 1024 by 768 pixels, photographed from just beyond the missing fourth wall with a phone held around chest height and angled slightly downward. Show the fake bedroom occupying the center and right two-thirds of the frame while the open warehouse floor, equipment, and unfinished wall backs remain visible along the left and upper edges. The view must include the centered black chair, back-wall door slightly right of center, and rectangular mirror mounted on the right side of the door. Scene and required details: Build the same replica studio room seen in art_raven_stream_base.png: narrow door, right-side mirror, printed repeated wall cracks, black chair, headset, desk, stiff curtain, exposed low socket prop, and sticker-like cat scratches. Reveal the construction outside the frame: unfinished fake walls with raw plywood backs and timber braces, two lighting stands with rectangular LED panels, a C-stand, black power cables crossing concrete, yellow-and-black floor tape, sandbags, a folding ladder, spare printed wall texture, a rolling wardrobe rack with a black hoodie, a small monitor showing an unreadable feed, and warehouse fluorescent fixtures overhead. Required readable text: A simple white gaffer-tape sign on the outer wooden brace must display the exact Chinese text 棚 B clearly and only once. 棚 B is the only fully readable text. Keep equipment labels, monitor content, case markings, floor notes, and packaging turned away, covered, or too blurred to read. Continuity: This photograph explains the source of art_raven_stream_base.png and art_frame39.png. The fake room must preserve their door, mirror on the right side of the door, chair, desk, curtain, cracks, and socket arrangement. The missing fourth wall and visible lighting stands should make clear that the webcam normally faces inward from the open side. Do not use the canonical real-room layout with the mirror on the left. Lighting and image defects: Neutral warehouse fluorescent work light mixed with the set's cold-white LED panels, realistic phone-camera auto exposure, slight green cast in the concrete area, mild shadow noise behind the fake walls, ordinary depth of field, small highlight clipping on metal stands, and subtle JPEG compression. Keep construction details readable without dramatic spotlighting. Do not include: No actors or crew, no person hiding behind the set, no luxury soundstage, no cinema camera crane, no giant green screen, no supernatural figure, no blood, no abandoned-hospital decay, no cyberpunk neon, no futuristic equipment, no mirror on the left side of the door, no complete enclosed real bedroom, no polished promotional lighting, no random readable labels, no film title, and no watermark. Output requirements: Produce one realistic 1024x768 behind-the-scenes evidence photograph with no border, no caption, no arrows, no callouts, no collage, and no interface overlay. The image should reward close inspection by clearly connecting the studio construction to the streamed replica room. Shared visual style: muted colors, early-2000s Chinese internet aesthetic, slightly low-res, candid documentary realism, no futuristic neon."
+    }
+  ],
+  "complianceCheck": {
+    "noRealExploit": "所有网络操作使用虚构地址、虚构锁层和不可迁移到现实环境的命令结果。",
+    "crimeHasCost": "涉案人员与机构在后续案件中进入警方调查和司法程序。",
+    "playerNotGlorified": "越界访问累计污点，并在最终自首情节中承担责任。",
+    "horrorBounded": "无血腥猎奇，每关至多一次可降级或关闭的跳吓。",
+    "allFictional": "人物、学校、平台、企业与城市系统均为架空设定。"
+  }
+}

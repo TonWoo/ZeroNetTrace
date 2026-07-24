@@ -1,0 +1,59 @@
+{
+  "caseId": "test_case",
+  "title": "测试案件",
+  "order": 0,
+  "estimatedMinutes": 5,
+  "coreQuestion": "测试证据能否形成结论？",
+  "unlockRequirements": [],
+  "investigationLines": [{"id": "T-L1", "title": "测试线", "beats": "检索、进入节点并取证。"}],
+  "twists": ["测试表象与证据记录不一致。"],
+  "hook": {"from": "测试人", "trigger": "测试钩子", "playerGoal": "取得证据"},
+  "network": [
+    {
+      "addr": "local.test",
+      "label": "公开节点",
+      "discoverWhen": {"type": "start"},
+      "defense": {"mode": "public", "layers": [], "trace": {"enabled": false}},
+      "files": [
+        {"path": "/readme.txt", "type": "text", "content": "这里写着长明。", "isEvidence": false},
+        {"path": "/proof.txt", "type": "text", "content": "测试证据全文。", "isEvidence": true, "evidenceId": "ev_proof"}
+      ]
+    },
+    {
+      "addr": "locked.test",
+      "label": "受保护节点",
+      "discoverWhen": {"type": "gate", "id": "kg_search"},
+      "defense": {
+        "mode": "crack",
+        "layers": [{"id": "ECHO", "durationSec": 2.0}],
+        "trace": {"enabled": true, "totalSeconds": 10.0, "unfocusedRate": 0.25, "lockoutSec": 20.0,
+          "signals": [{"at": 0.2, "target": "relay.test", "reduction": 0.15}]}
+      },
+      "files": [{"path": "/secret.txt", "type": "text", "content": "隐藏文本。", "isEvidence": true, "evidenceId": "ev_secret"}]
+    },
+    {
+      "addr": "login.test",
+      "label": "凭证节点",
+      "discoverWhen": {"type": "start"},
+      "defense": {"mode": "credential", "credentialGateId": "kg_login", "layers": [], "trace": {"enabled": false}},
+      "files": [{"path": "/mail.txt", "type": "text", "content": "登录成功。", "isEvidence": false}]
+    }
+  ],
+  "sites": [],
+  "knowledgeGates": [
+    {"id": "kg_search", "channel": "search", "accept": ["长明"], "aliases": ["changming", "数字纪念馆"], "hints": ["方向", "范围", "方法"], "unlockEffects": []},
+    {"id": "kg_login", "channel": "login", "accept": [{"user": "CM-041", "pass": "202303changming"}], "aliases": [], "hints": ["方向", "范围", "方法"], "unlockEffects": []}
+  ],
+  "horrorEvents": [
+    {"id": "h_once", "level": "B", "trigger": {"type": "evidence_collected", "target": "ev_secret"}, "once": true,
+      "variants": {"full": {"text": "完整"}, "reduced": {"text": "减弱"}, "off": {"text": ""}}}
+  ],
+  "caseReport": [
+    {"id": "q1", "q": "问题1", "options": ["错", "对", "错", "错"], "answer": 1, "evidence": ["ev_proof"]},
+    {"id": "q2", "q": "问题2", "options": ["对", "错", "错", "错"], "answer": 0, "evidence": ["ev_secret"]},
+    {"id": "q3", "q": "问题3", "options": ["错", "错", "对", "错"], "answer": 2, "evidence": ["ev_secret"]}
+  ],
+  "contentManifest": [],
+  "artAssets": [],
+  "complianceCheck": {"noRealExploit": "虚构"}
+}

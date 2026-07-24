@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/apps/case_report_app.gd" id="1"]
+
+[node name="CaseReportApp" type="PanelContainer"]
+offset_left = 360.0
+offset_top = 90.0
+offset_right = 1240.0
+offset_bottom = 820.0
+script = ExtResource("1")
+app_title = "结案报告"
+app_id = "report"
+

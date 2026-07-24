@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/apps/mail_app.gd" id="1"]
+
+[node name="MailApp" type="PanelContainer"]
+offset_left = 760.0
+offset_top = 80.0
+offset_right = 1560.0
+offset_bottom = 800.0
+script = ExtResource("1")
+app_title = "邮件 // DEADLETTER"
+app_id = "mail"
+

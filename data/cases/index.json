@@ -1,0 +1,22 @@
+{
+  "cases": [
+    {
+      "id": "prologue_dead_mail",
+      "title": "序章：一封死人的邮件",
+      "order": 0,
+      "path": "res://data/cases/prologue.json"
+    },
+    {
+      "id": "case_01_gate_2am",
+      "title": "01：凌晨两点的门禁",
+      "order": 1,
+      "path": "res://data/cases/case_01_gate.json"
+    },
+    {
+      "id": "case_02_dead_streamer",
+      "title": "02：死者在线",
+      "order": 2,
+      "path": "res://data/cases/case_02_dead_streamer.json"
+    }
+  ]
+}

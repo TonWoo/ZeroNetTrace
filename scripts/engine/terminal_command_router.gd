@@ -1,0 +1,168 @@
+class_name TerminalCommandRouter
+extends RefCounted
+
+const SUPPORTED_COMMANDS := [
+	"scan", "probe", "crack", "login", "ls", "cd", "cat", "open", "get", "trace", "note", "disconnect"
+]
+
+var runtime
+var current_node := ""
+var current_path := "/"
+var command_history: Array[String] = []
+
+func _init(runtime_ref = null) -> void:
+	runtime = runtime_ref
+
+func configure(runtime_ref) -> void:
+	runtime = runtime_ref
+
+func execute(raw_text: String) -> Dictionary:
+	var parsed := parse(raw_text)
+	var command := String(parsed.get("command", ""))
+	if command.is_empty():
+		return _result(false, "empty_command", String(parsed.get("error", "请输入命令。")))
+	command_history.append(raw_text)
+	if not SUPPORTED_COMMANDS.has(command):
+		return _result(false, "unknown_command", "未知命令：%s。输入规定命令继续。" % command)
+	if runtime == null:
+		return _result(false, "runtime_missing", "案件运行时尚未加载。")
+	var args: Array = parsed.get("args", [])
+	var options: Dictionary = parsed.get("options", {})
+	match command:
+		"scan":
+			var addresses: Array[String] = runtime.get_visible_addresses()
+			return _result(true, "scan_ok", "可见节点：\n" + "\n".join(addresses))
+		"probe":
+			return runtime.probe(_required_arg(args, 0))
+		"crack":
+			return runtime.start_crack(_required_arg(args, 0))
+		"login":
+			var addr := _required_arg(args, 0)
+			var response: Dictionary = runtime.login(addr, String(options.get("u", "")), String(options.get("p", "")))
+			if bool(response.get("ok", false)):
+				current_node = addr
+				current_path = "/"
+			return response
+		"ls":
+			var target_path := _resolve_path(_required_arg(args, 0, current_path))
+			var entries: Array[String] = runtime.list_directory(current_node, target_path)
+			if entries.is_empty() and not runtime.directory_exists(current_node, target_path):
+				return _result(false, "directory_missing", "目录不存在或当前未连接节点。")
+			return _result(true, "list_ok", "\n".join(entries))
+		"cd":
+			return _change_directory(_required_arg(args, 0, "/"))
+		"cat":
+			var read_result: Dictionary = runtime.open_file(current_node, _resolve_path(_required_arg(args, 0)))
+			if bool(read_result.get("ok", false)) and String(read_result.get("type", "text")) not in ["text", "log", "doc", "sheet", "db"]:
+				return _result(false, "cat_unsupported", "该文件类型请使用 open。")
+			return read_result
+		"open":
+			var open_result: Dictionary = runtime.open_file(current_node, _resolve_path(_required_arg(args, 0)))
+			if bool(open_result.get("ok", false)):
+				open_result["action"] = "open_viewer"
+			return open_result
+		"get":
+			return runtime.collect_evidence(current_node, _resolve_path(_required_arg(args, 0)))
+		"trace":
+			return runtime.trace_target(_required_arg(args, 0))
+		"note":
+			var note_text := " ".join(args).strip_edges()
+			if note_text.is_empty():
+				return _result(false, "note_empty", "笔记内容为空。")
+			runtime.notes += ("\n" if not runtime.notes.is_empty() else "") + note_text
+			return _result(true, "note_saved", "笔记已保存。")
+		"disconnect":
+			current_node = ""
+			current_path = "/"
+			return runtime.force_disconnect(false)
+	return _result(false, "unknown_command", "未知命令。")
+
+func autocomplete(prefix: String) -> Array[String]:
+	var normalized := prefix.to_lower()
+	var results: Array[String] = []
+	for command in SUPPORTED_COMMANDS:
+		if command.begins_with(normalized):
+			results.append(command)
+	return results
+
+func _change_directory(raw_target: String) -> Dictionary:
+	var target_node := current_node
+	var target_path := raw_target
+	if raw_target.contains(":"):
+		var split_at := raw_target.find(":")
+		target_node = raw_target.left(split_at)
+		target_path = raw_target.substr(split_at + 1)
+	if target_node.is_empty() or not runtime.is_node_authenticated(target_node):
+		return _result(false, "not_authenticated", "目标节点尚未登录或破解完成。")
+	var normalized := _normalize_path(target_path if target_path.begins_with("/") else current_path.path_join(target_path))
+	if not runtime.directory_exists(target_node, normalized):
+		return _result(false, "directory_missing", "目录不存在。")
+	current_node = target_node
+	current_path = normalized
+	return _result(true, "directory_changed", "%s:%s" % [current_node, current_path])
+
+func _resolve_path(raw_path: String) -> String:
+	if raw_path.begins_with("/"):
+		return _normalize_path(raw_path)
+	return _normalize_path(current_path.path_join(raw_path))
+
+func _normalize_path(path: String) -> String:
+	var parts: Array[String] = []
+	for part in path.replace("\\", "/").split("/", false):
+		if part == "." or part.is_empty():
+			continue
+		if part == "..":
+			if not parts.is_empty():
+				parts.pop_back()
+		else:
+			parts.append(part)
+	return "/" + "/".join(parts)
+
+func _required_arg(args: Array, index: int, fallback := "") -> String:
+	if index < args.size():
+		return String(args[index])
+	return String(fallback)
+
+func _result(ok: bool, code: String, text: String) -> Dictionary:
+	return {"ok": ok, "code": code, "text": text}
+
+func parse(raw_text: String) -> Dictionary:
+	var tokens := _tokenize(raw_text.strip_edges())
+	if tokens.is_empty():
+		return {"command": "", "args": [], "options": {}, "error": "请输入命令。"}
+	var command := String(tokens.pop_front()).to_lower()
+	var args: Array[String] = []
+	var options := {}
+	var index := 0
+	while index < tokens.size():
+		var token := String(tokens[index])
+		if token.begins_with("-") and token.length() > 1:
+			var key := token.trim_prefix("--").trim_prefix("-")
+			if index + 1 >= tokens.size() or String(tokens[index + 1]).begins_with("-"):
+				options[key] = true
+			else:
+				options[key] = String(tokens[index + 1])
+				index += 1
+		else:
+			args.append(token)
+		index += 1
+	return {"command": command, "args": args, "options": options, "error": ""}
+
+func _tokenize(text: String) -> Array[String]:
+	var tokens: Array[String] = []
+	var current := ""
+	var quote := ""
+	for character in text:
+		if quote.is_empty() and (character == "\"" or character == "'"):
+			quote = character
+		elif not quote.is_empty() and character == quote:
+			quote = ""
+		elif quote.is_empty() and character in [" ", "\t"]:
+			if not current.is_empty():
+				tokens.append(current)
+				current = ""
+		else:
+			current += character
+	if not current.is_empty():
+		tokens.append(current)
+	return tokens
