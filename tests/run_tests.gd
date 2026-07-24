@@ -15,6 +15,7 @@ func _initialize() -> void:
 		"res://tests/test_data_repository.gd",
 		"res://tests/test_save_service.gd",
 		"res://tests/test_audio_director.gd",
+		"res://tests/test_tutorial_feedback.gd",
 		"res://tests/test_project_services.gd",
 		"res://tests/test_main_campaign_save.gd",
 		"res://tests/test_ui_scenes.gd",

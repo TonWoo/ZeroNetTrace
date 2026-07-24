@@ -309,8 +309,13 @@ func _tutorial_message(content_id: String) -> Dictionary:
 			return message_value
 	return {}
 
-func _on_tutorial_feedback_requested(_app_id: String, _style: String, _sound: String) -> void:
-	pass
+func _on_tutorial_feedback_requested(app_id: String, style: String, sound: String) -> void:
+	if apps.has(app_id):
+		var target_app = apps[app_id]
+		if bool(target_app.visible) and target_app.has_method("pulse_feedback"):
+			target_app.pulse_feedback(style)
+	if sound == "progress_soft" and audio_director != null and audio_director.has_method("play_progress_soft"):
+		audio_director.play_progress_soft()
 
 func _pin_snapshot(label: String, image_path: String) -> void:
 	apps["notebook"].pin_snapshot(label, image_path)

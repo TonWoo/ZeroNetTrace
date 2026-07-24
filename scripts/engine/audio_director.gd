@@ -7,6 +7,10 @@ var _sting_frames := 0
 var _silence_frames := 0
 var _hard_drive_frames := 0
 var _key_frames := 0
+var _progress_frames := 0
+var _progress_total_frames := 0
+var _progress_queued := false
+var _progress_queued_frames := 0
 var _noise_seed := 17357
 
 func _ready() -> void:
@@ -27,6 +31,8 @@ func _process(_delta: float) -> void:
 		return
 	var frames := _playback.get_frames_available()
 	for _index in frames:
+		if _progress_queued and _sting_frames <= 0 and _silence_frames <= 0 and _progress_frames <= 0:
+			_start_progress(_progress_queued_frames)
 		var frequency := 71.0
 		var amplitude := 0.018
 		var sample := 0.0
@@ -43,6 +49,10 @@ func _process(_delta: float) -> void:
 		elif _key_frames > 0:
 			frequency = 1450.0
 			amplitude = 0.045
+		elif _progress_frames > 0:
+			var elapsed := _progress_total_frames - _progress_frames
+			frequency = 620.0 if elapsed < _progress_total_frames / 2 else 820.0
+			amplitude = 0.022
 		if not (_hard_drive_frames > 0 and _sting_frames <= 0 and _silence_frames <= 0):
 			sample = sin(_phase) * amplitude
 		_phase = fmod(_phase + TAU * frequency / 22050.0, TAU)
@@ -55,11 +65,15 @@ func _process(_delta: float) -> void:
 			_hard_drive_frames -= 1
 		elif _key_frames > 0:
 			_key_frames -= 1
+		elif _progress_frames > 0:
+			_progress_frames -= 1
 
 func play_sting(duration := 0.22) -> void:
+	_queue_active_progress()
 	_sting_frames = int(22050.0 * duration)
 
 func begin_silence(duration: float) -> void:
+	_queue_active_progress()
 	_silence_frames = maxi(_silence_frames, int(22050.0 * duration))
 	_hard_drive_frames = 0
 	_key_frames = 0
@@ -69,6 +83,27 @@ func play_key_tick() -> void:
 
 func play_hard_drive(duration := 0.12) -> void:
 	_hard_drive_frames = maxi(_hard_drive_frames, int(22050.0 * duration))
+
+func play_progress_soft(duration := 0.16) -> void:
+	var requested_frames := maxi(1, int(22050.0 * duration))
+	if _sting_frames > 0 or _silence_frames > 0:
+		_progress_queued = true
+		_progress_queued_frames = maxi(_progress_queued_frames, requested_frames)
+		return
+	_start_progress(requested_frames)
+
+func _start_progress(frames: int) -> void:
+	_progress_total_frames = maxi(frames, 1)
+	_progress_frames = _progress_total_frames
+	_progress_queued = false
+	_progress_queued_frames = 0
+
+func _queue_active_progress() -> void:
+	if _progress_frames <= 0:
+		return
+	_progress_queued = true
+	_progress_queued_frames = maxi(_progress_queued_frames, _progress_total_frames)
+	_progress_frames = 0
 
 func _exit_tree() -> void:
 	if _player:

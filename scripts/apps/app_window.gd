@@ -9,6 +9,9 @@ signal activated(window: Control)
 var body: MarginContainer
 var title_label: Label
 var resize_handle: Control
+var _feedback_border: Panel
+var _feedback_tween: Tween
+var _feedback_cooldown_until_msec := 0
 var _dragging := false
 var _resizing := false
 var _drag_offset := Vector2.ZERO
@@ -72,6 +75,18 @@ func _build_chrome() -> void:
 	resize_handle.mouse_filter = Control.MOUSE_FILTER_STOP
 	resize_handle.gui_input.connect(_on_resize_input)
 	root.add_child(resize_handle)
+	_feedback_border = Panel.new()
+	_feedback_border.name = "FeedbackBorder"
+	_feedback_border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_feedback_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_feedback_border.modulate.a = 0.0
+	_feedback_border.z_index = 50
+	var feedback_style := StyleBoxFlat.new()
+	feedback_style.bg_color = Color(0.0, 0.0, 0.0, 0.0)
+	feedback_style.border_color = Color("#92a69a")
+	feedback_style.set_border_width_all(2)
+	_feedback_border.add_theme_stylebox_override("panel", feedback_style)
+	add_child(_feedback_border)
 
 func _build_body(_parent: MarginContainer) -> void:
 	pass
@@ -80,6 +95,24 @@ func focus_window() -> void:
 	show()
 	move_to_front()
 	activated.emit(self)
+
+func pulse_feedback(style := "soft") -> void:
+	if _feedback_border == null or style != "soft":
+		return
+	var now := Time.get_ticks_msec()
+	if now < _feedback_cooldown_until_msec and _feedback_tween != null and _feedback_tween.is_running():
+		return
+	if _feedback_tween != null and _feedback_tween.is_valid():
+		_feedback_tween.kill()
+	_feedback_cooldown_until_msec = now + 250
+	_feedback_border.modulate.a = 0.0
+	_feedback_tween = create_tween()
+	_feedback_tween.set_trans(Tween.TRANS_SINE)
+	_feedback_tween.set_ease(Tween.EASE_IN_OUT)
+	_feedback_tween.tween_property(_feedback_border, "modulate:a", 0.52, 0.08)
+	_feedback_tween.tween_property(_feedback_border, "modulate:a", 0.0, 0.12)
+	_feedback_tween.tween_property(_feedback_border, "modulate:a", 0.38, 0.08)
+	_feedback_tween.tween_property(_feedback_border, "modulate:a", 0.0, 0.17)
 
 func snap_left() -> void:
 	var viewport_size := get_viewport_rect().size

@@ -9,10 +9,17 @@ func run(t) -> void:
 	director._ready()
 	t.equal(DisplayServer.get_name(), "headless", "audio test runs with headless display server")
 	t.equal(director._player, null, "headless mode does not create an audio playback graph")
+	t.truthy(director.has_method("play_progress_soft"), "audio director exposes a non-horror progress cue")
+	if director.has_method("play_progress_soft"):
+		director.play_progress_soft(0.16)
+		t.equal(director._progress_frames, 3528, "progress cue uses the requested generator duration")
 	t.truthy(director.has_method("begin_silence"), "audio director exposes post-sting silence control")
 	if director.has_method("begin_silence"):
 		director.begin_silence(5.0)
 		t.equal(director._silence_frames, 110250, "five-second horror silence is scheduled at the generator rate")
+		if director.has_method("play_progress_soft"):
+			director.play_progress_soft(0.16)
+			t.truthy(director._progress_queued, "progress cues queue behind horror silence")
 	t.truthy(director.has_method("play_hard_drive"), "audio director exposes a procedural hard-drive seek effect")
 	if director.has_method("play_hard_drive"):
 		director.play_hard_drive(0.1)
