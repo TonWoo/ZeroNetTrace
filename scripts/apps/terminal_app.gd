@@ -61,14 +61,13 @@ func _build_body(parent: MarginContainer) -> void:
 	input.text_submitted.connect(_on_command)
 	input.gui_input.connect(_on_input_event)
 	column.add_child(input)
-	_print_line("[color=#777f7a]ZERO-SHELL 0.9 // 输入 scan 开始。[/color]")
-	_print_line("[color=#777f7a]scan | probe <地址> | crack <地址> | login <地址> -u <用户> -p <密码>[/color]")
-	_print_line("[color=#777f7a]ls | cd | cat | open | get | trace | note | disconnect[/color]")
+	_print_line("[color=#777f7a]ZERO-SHELL 1.0 // 本地命令手册可用。输入 help。[/color]")
+	_print_line("[color=#777f7a]如果你不知道下一步操作方法，输入 help tutorial 读取最近恢复的操作备忘。[/color]")
 
-func configure(runtime_ref) -> void:
+func configure(runtime_ref, tutorial_ref = null) -> void:
 	runtime = runtime_ref
 	var router_script = load("res://scripts/engine/terminal_command_router.gd")
-	router = router_script.new(runtime)
+	router = router_script.new(runtime, tutorial_ref)
 
 func _process(delta: float) -> void:
 	if runtime == null:

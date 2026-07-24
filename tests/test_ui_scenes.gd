@@ -34,6 +34,10 @@ func run(t) -> void:
 	var terminal = load("res://scenes/apps/terminal_app.tscn").instantiate()
 	tree.root.add_child(terminal)
 	terminal._ready()
+	var terminal_boot_text: String = terminal.output.get_parsed_text()
+	t.contains_text(terminal_boot_text, "输入 help", "terminal boot copy exposes the local manual in-world")
+	t.truthy(not terminal_boot_text.contains("scan | probe"), "terminal boot copy does not dump an incomplete command list")
+	t.equal(_method_argument_count(terminal, "configure"), 2, "terminal app accepts the active tutorial runtime")
 	terminal.configure(runtime)
 	var terminal_events: Array = []
 	t.equal(_signal_argument_count(terminal, "command_executed"), 2, "terminal command facts include raw text and result")
@@ -87,4 +91,10 @@ func _signal_argument_count(object: Object, signal_name: String) -> int:
 	for signal_info in object.get_signal_list():
 		if String(signal_info.get("name", "")) == signal_name:
 			return signal_info.get("args", []).size()
+	return -1
+
+func _method_argument_count(object: Object, method_name: String) -> int:
+	for method_info in object.get_method_list():
+		if String(method_info.get("name", "")) == method_name:
+			return method_info.get("args", []).size()
 	return -1

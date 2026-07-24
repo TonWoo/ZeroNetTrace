@@ -202,7 +202,7 @@ func _load_case_at(index: int, saved := {}) -> void:
 	tutorial_runtime.nudge_requested.connect(_deliver_tutorial_content)
 	case_label.text = "零网寻踪 // %s" % current_case_data.get("title", "未知案件")
 	status_label.text = "本地工作区就绪"
-	apps["terminal"].configure(runtime)
+	apps["terminal"].configure(runtime, tutorial_runtime)
 	apps["browser"].configure(runtime, current_case_data)
 	apps["mail"].set_mails(current_case_data.get("mails", []), runtime)
 	apps["messenger"].set_conversations(current_case_data.get("conversations", []), runtime)

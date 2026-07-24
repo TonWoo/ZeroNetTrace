@@ -25,15 +25,18 @@ const COMMAND_HELP := {
 const HELP_GROUPS := ["网络侦察", "文件系统", "风险控制", "调查辅助", "系统帮助"]
 
 var runtime
+var tutorial_runtime
 var current_node := ""
 var current_path := "/"
 var command_history: Array[String] = []
 
-func _init(runtime_ref = null) -> void:
+func _init(runtime_ref = null, tutorial_ref = null) -> void:
 	runtime = runtime_ref
+	tutorial_runtime = tutorial_ref
 
-func configure(runtime_ref) -> void:
+func configure(runtime_ref, tutorial_ref = null) -> void:
 	runtime = runtime_ref
+	tutorial_runtime = tutorial_ref
 
 func execute(raw_text: String) -> Dictionary:
 	var parsed := parse(raw_text)
@@ -48,7 +51,11 @@ func execute(raw_text: String) -> Dictionary:
 		return _result(false, "unknown_command", "未知命令：%s。输入 help 查看本地命令手册。" % command)
 	if command == "help":
 		var help_target := _required_arg(parsed.get("args", []), 0)
+		if help_target == "tutorial" and tutorial_runtime != null:
+			return _result(true, "help_tutorial", tutorial_runtime.get_help_text())
 		return _result(true, "help_ok", _help_index() if help_target.is_empty() else _help_for(help_target))
+	if command == "tutorial":
+		return _execute_tutorial(parsed.get("args", []))
 	var missing := _validate_required_arguments(command, parsed)
 	if not missing.is_empty():
 		return _missing_argument(command)
@@ -194,6 +201,19 @@ func _validate_required_arguments(command: String, parsed: Dictionary) -> String
 func _missing_argument(command: String) -> Dictionary:
 	var entry: Dictionary = COMMAND_HELP.get(command, {})
 	return _result(false, "missing_argument", "参数不足。语法：%s\n输入 help %s 查看本地手册。" % [String(entry.get("syntax", command)), command])
+
+func _execute_tutorial(args: Array) -> Dictionary:
+	if tutorial_runtime == null:
+		return _result(false, "tutorial_unavailable", "当前案件没有可同步的教学签名盒。输入 help <命令> 查看本地手册。")
+	var action := _required_arg(args, 0).to_lower()
+	match action:
+		"skip":
+			tutorial_runtime.skip()
+			return _result(true, "tutorial_skipped", "教学签名盒已静音。案件进度、证据与三级提示保持不变。")
+		"restart":
+			tutorial_runtime.restart()
+			return _result(true, "tutorial_restarted", "教学签名盒已按当前案件状态重新同步。输入 help tutorial 读取最近恢复的操作备忘。")
+	return _result(false, "tutorial_usage", "用法：tutorial <skip|restart>。输入 help tutorial 查看当前操作备忘。")
 
 func _closest_command(command: String) -> String:
 	var closest := ""

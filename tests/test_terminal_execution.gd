@@ -1,5 +1,7 @@
 extends RefCounted
 
+const TutorialRuntimeScript = preload("res://scripts/engine/tutorial_runtime.gd")
+
 func run(t) -> void:
 	var router_script = load("res://scripts/engine/terminal_command_router.gd")
 	var runtime_script = load("res://scripts/engine/case_runtime.gd")
@@ -10,6 +12,21 @@ func run(t) -> void:
 	var runtime = runtime_script.new()
 	runtime.setup(case_data)
 	var router = router_script.new(runtime)
+	var tutorial_case := {
+		"caseId": "terminal_tutorial",
+		"tutorialFlow": {"enabled": true, "steps": [{"id": "read_mail", "completeWhen": {"type": "mail_opened", "target": "mail_primary"}, "delivery": [], "feedback": {}, "helpText": "先核对死者留下的原始邮件。"}]}
+	}
+	var tutorial = TutorialRuntimeScript.new()
+	tutorial.configure(tutorial_case)
+	t.equal(_method_argument_count(router, "configure"), 2, "terminal router accepts a tutorial runtime alongside the case runtime")
+	if _method_argument_count(router, "configure") == 2:
+		router.configure(runtime, tutorial)
+	t.contains_text(router.execute("help tutorial").get("text", ""), "原始邮件", "help tutorial returns contextual diegetic guidance")
+	t.truthy(router.execute("tutorial skip").get("ok"), "tutorial skip is accepted")
+	t.truthy(tutorial.is_skipped(), "tutorial skip updates runtime state")
+	t.truthy(router.execute("tutorial restart").get("ok"), "tutorial restart is accepted")
+	t.truthy(not tutorial.is_skipped(), "tutorial restart resumes the tutorial")
+	t.equal(router.execute("tutorial erase").get("code"), "tutorial_usage", "unknown tutorial actions show safe usage")
 	var help_result: Dictionary = router.execute("help")
 	t.truthy(help_result.get("ok"), "help is an executable terminal command")
 	t.contains_text(help_result.get("text", ""), "网络侦察", "help groups reconnaissance commands")
@@ -40,3 +57,9 @@ func run(t) -> void:
 	t.equal(router.execute("wat").get("code"), "unknown_command", "unknown command is explicit")
 	t.truthy(router.execute("disconnect").get("ok"), "disconnect succeeds")
 	runtime.free()
+
+func _method_argument_count(object: Object, method_name: String) -> int:
+	for method_info in object.get_method_list():
+		if String(method_info.get("name", "")) == method_name:
+			return method_info.get("args", []).size()
+	return -1

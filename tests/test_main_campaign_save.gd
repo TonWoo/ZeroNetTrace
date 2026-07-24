@@ -7,6 +7,7 @@ const TutorialRuntimeScript = preload("res://scripts/engine/tutorial_runtime.gd"
 func run(t) -> void:
 	var main_source := FileAccess.get_file_as_string("res://scripts/os/main.gd")
 	t.truthy(not main_source.contains('status_label.text = String(current_case_data.get("hook", {}).get("playerGoal"'), "desktop status bar does not become a persistent objective panel")
+	t.contains_text(main_source, 'apps["terminal"].configure(runtime, tutorial_runtime)', "main gives the terminal access to contextual tutorial help")
 	var case_data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/minimal_case.json"))
 	var runtime = RuntimeScript.new()
 	runtime.setup(case_data)
