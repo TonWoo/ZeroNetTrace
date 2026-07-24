@@ -1,6 +1,44 @@
+# Godot editor/import cache
 .godot/
+.import/
+
+# Workspace-local tools and generated deliverables
 .tools/
 builds/
-user-data/
-*.tmp
+artifacts/
 
+# Runtime data and logs
+user-data/
+*.log
+*.tmp
+*.bak
+
+# Local secrets and signing material
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+credentials*.json
+secrets*.json
+
+# Python tooling caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+coverage/
+.venv/
+venv/
+
+# IDE and operating-system files
+.idea/
+.vscode/
+.vs/
+*.suo
+*.user
+.DS_Store
+Thumbs.db
+Desktop.ini
