@@ -8,6 +8,7 @@ func _initialize() -> void:
 	var suites: Array[String] = [
 		"res://tests/test_terminal_parser.gd",
 		"res://tests/test_terminal_execution.gd",
+		"res://tests/test_tutorial_runtime.gd",
 		"res://tests/test_search_service.gd",
 		"res://tests/test_case_runtime.gd",
 		"res://tests/test_content_validator.gd",
