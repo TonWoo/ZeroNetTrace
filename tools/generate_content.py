@@ -46,7 +46,7 @@ def result(title: str, url: str, snippet: str) -> dict:
     return {"title": title, "url": url, "snippet": snippet}
 
 
-def story_mail(subject: str, sender: str, time: str, body: str, signature: str, attachments: list[dict] | None = None, unlock_when: dict | None = None) -> dict:
+def story_mail(subject: str, sender: str, time: str, body: str, signature: str, attachments: list[dict] | None = None, unlock_when: dict | None = None, mail_id: str | None = None) -> dict:
     mail = {
         "subject": subject,
         "from": sender,
@@ -57,6 +57,8 @@ def story_mail(subject: str, sender: str, time: str, body: str, signature: str, 
     }
     if unlock_when is not None:
         mail["unlockWhen"] = unlock_when
+    if mail_id is not None:
+        mail["id"] = mail_id
     return mail
 
 
@@ -115,6 +117,40 @@ def build_prologue() -> dict:
         7: "2026-07-21 02:13:00 DEADLETTER schedule sender=linwei recipient=chenmo deliver_at=2026-07-24T03:17:00 rule=MIRROR-17",
         19: "2026-07-24 03:17:00 DEADLETTER delivered sender=linwei recipient=chenmo status=SIGNED_BY_DECEASED_ACCOUNT",
     })
+    tutorial_messages = [
+        {"id": "tut_mail_read", "sender": "ZERO-SHELL / LOCAL", "text": "原始邮件已展开并保留签名头。正文反复要求核对随信文件；附件仍在本地沙箱中，打开它不会向外部网络发送内容。"},
+        {"id": "tut_attachment_opened", "sender": "林薇的离线签名盒", "text": "恢复片段 01：编号本身不是地址。把它和邮件里那个已经停运的服务放在一起核对，别让搜索引擎替你省略任何一半。"},
+        {"id": "tut_search_resolved", "sender": "ZERO-SHELL / LOCAL MANUAL", "text": "缓存监测记录显示远端仍有响应。搜索能证明它存在，终端才能确认它现在暴露了什么。"},
+        {"id": "tut_scan_complete", "sender": "ZERO-SHELL / DIAGNOSTIC", "text": "检测到一条只读镜像响应。当前防护状态未知；在启动任务前先识别访问模式和锁层。"},
+        {"id": "tut_probe_complete", "sender": "林薇的离线签名盒", "text": "恢复片段 02：先看清锁是什么，再决定用钥匙还是让破解器慢慢磨。别把每扇门都当成同一种门。"},
+        {"id": "tut_counter_ping", "sender": "林薇的离线签名盒", "text": "恢复片段 03：中继不是敌人，是你甩掉视线的出口。盯住终端刚刚报出的名字。"},
+        {"id": "tut_filesystem", "sender": "ZERO-SHELL / RECOVERED NOTE", "text": "林薇：先看目录。文本要读原文，需要交给警方复核的文件再复制回本机。看过不等于取证。"},
+        {"id": "tut_evidence", "sender": "林薇的离线签名盒", "text": "恢复片段 04：别只记结论，保留能让别人独立复核的原件。你的访问记录也一样，最后一起交出去。"},
+        {"id": "tut_report_ready", "sender": "本地证据目录", "text": "封存条件已满足。结论必须逐项引用原始证据；证据不足的问题宁可暂不提交。"},
+        {"id": "tut_complete", "sender": "林薇的离线签名盒", "text": "教学签名盒已封存。后面的案子不会再替你排列步骤；忘记工具时，ZERO-SHELL 的本地手册仍在。"},
+    ]
+    tutorial_nudges = [
+        {"id": "tut_nudge_mail", "sender": "ZERO-SHELL / LOCAL", "text": "邮件列表里有一封主动留给你的信。先读她写下的原文，不要只看主题。"},
+        {"id": "tut_nudge_attachment", "sender": "林薇的离线签名盒", "text": "恢复提示：她在正文里反复强调附件。损坏提示本身也可能保存了编号。"},
+        {"id": "tut_nudge_search", "sender": "林薇的离线签名盒", "text": "恢复提示：旧服务名和缓存编号各自都不完整，把两段已知信息放进同一次检索。"},
+        {"id": "tut_nudge_scan", "sender": "ZERO-SHELL / LOCAL MANUAL", "text": "网页缓存只能说明远端存在。要确认当前网络里有哪些节点，需要先做一次边界扫描。"},
+        {"id": "tut_nudge_probe", "sender": "ZERO-SHELL / LOCAL MANUAL", "text": "看到地址不等于知道门锁。启动任务前先读取目标的访问模式与锁层。"},
+        {"id": "tut_nudge_trace", "sender": "林薇的离线签名盒", "text": "恢复提示：破解器运行时别离开终端太久。出现 COUNTER-PING 后，记住它报出的中继名。"},
+        {"id": "tut_nudge_files", "sender": "ZERO-SHELL / RECOVERED NOTE", "text": "节点已经放行。先列出目录，再决定哪些文件需要读原文。忘记语法就查本地手册。"},
+        {"id": "tut_nudge_evidence", "sender": "林薇的离线签名盒", "text": "恢复提示：读过只能形成印象，复制原始文件才能形成可复核的证据。"},
+        {"id": "tut_nudge_report", "sender": "本地证据目录", "text": "证据已经封存。结案入口在桌面任务栏；每个判断都要对应已经取得的原始文件。"},
+    ]
+    tutorial_steps = [
+        {"id": "read_dead_mail", "completeWhen": {"type": "mail_opened", "target": "mail_deadletter_primary"}, "delivery": [{"channel": "terminal", "contentId": "tut_mail_read"}], "feedback": {"appId": "mail", "pulse": "soft", "sound": "progress_soft"}, "fallback": {"afterSec": 75, "channel": "messenger", "contentId": "tut_nudge_mail"}, "helpText": "先读取死者留下的原始邮件正文，不要只看主题。"},
+        {"id": "open_attachment", "completeWhen": {"type": "attachment_opened", "target": "attachment_deadletter_link"}, "delivery": [{"channel": "messenger", "contentId": "tut_attachment_opened"}], "feedback": {"appId": "viewer", "pulse": "soft", "sound": "progress_soft"}, "fallback": {"afterSec": 75, "channel": "messenger", "contentId": "tut_nudge_attachment"}, "helpText": "邮件正文反复要求核对附件；先看错误页留下了什么。"},
+        {"id": "resolve_mirror_search", "completeWhen": {"type": "gate_resolved", "target": "kg_mirror_search"}, "delivery": [{"channel": "terminal", "contentId": "tut_search_resolved"}], "feedback": {"appId": "browser", "pulse": "soft", "sound": "progress_soft"}, "fallback": {"afterSec": 90, "channel": "messenger", "contentId": "tut_nudge_search"}, "helpText": "把邮件中的旧服务称呼与附件编号作为同一次检索的两部分。"},
+        {"id": "scan_network", "completeWhen": {"type": "command_succeeded", "target": "scan"}, "delivery": [{"channel": "terminal", "contentId": "tut_scan_complete"}], "feedback": {"appId": "terminal", "pulse": "soft", "sound": "progress_soft"}, "fallback": {"afterSec": 60, "channel": "messenger", "contentId": "tut_nudge_scan"}, "helpText": "网页缓存只证明远端存在；用终端确认当前网络边界。"},
+        {"id": "probe_mirror", "completeWhen": {"type": "command_succeeded", "target": "probe", "where": {"addr": "mirror17.deadletter.zero"}}, "delivery": [{"channel": "messenger", "contentId": "tut_probe_complete"}], "feedback": {"appId": "terminal", "pulse": "soft", "sound": "progress_soft"}, "fallback": {"afterSec": 60, "channel": "messenger", "contentId": "tut_nudge_probe"}, "helpText": "对新出现的节点先识别访问模式与锁层，再决定如何进入。"},
+        {"id": "evade_counter_trace", "completeWhen": {"type": "counter_trace_reduced", "target": "relay.deadletter-17"}, "delivery": [{"channel": "messenger", "contentId": "tut_counter_ping"}], "feedback": {"appId": "terminal", "pulse": "soft", "sound": "progress_soft"}, "fallback": {"afterSec": 75, "channel": "messenger", "contentId": "tut_nudge_trace"}, "helpText": "破解器运行时留意 COUNTER-PING；终端报出的中继能帮助降低追踪压力。"},
+        {"id": "enter_filesystem", "completeWhen": {"type": "node_authenticated", "target": "mirror17.deadletter.zero"}, "delivery": [{"channel": "terminal", "contentId": "tut_filesystem"}], "feedback": {"appId": "terminal", "pulse": "soft", "sound": "progress_soft"}, "fallback": {"afterSec": 60, "channel": "messenger", "contentId": "tut_nudge_files"}, "helpText": "节点放行后先列出目录；阅读原文和复制证据是两件事。"},
+        {"id": "collect_linwei_log", "completeWhen": {"allOf": [{"type": "command_succeeded", "target": "ls"}, {"type": "file_opened", "target": "/archive/LW_最后一次校对.zlog"}, {"type": "evidence_collected", "target": "ev_linwei_log"}]}, "delivery": [{"channel": "messenger", "contentId": "tut_evidence"}, {"channel": "messenger", "contentId": "tut_report_ready"}], "feedback": {"appId": "terminal", "pulse": "soft", "sound": "progress_soft"}, "fallback": {"afterSec": 90, "channel": "messenger", "contentId": "tut_nudge_evidence"}, "helpText": "先看目录，再读林薇留下的日志原文，最后把原文件复制进证据目录。"},
+        {"id": "complete_report", "completeWhen": {"type": "report_complete", "target": "prologue_dead_mail"}, "delivery": [{"channel": "messenger", "contentId": "tut_complete"}], "feedback": {"appId": "report", "pulse": "soft", "sound": "progress_soft"}, "fallback": {"afterSec": 90, "channel": "messenger", "contentId": "tut_nudge_report"}, "helpText": "证据封存后，从桌面任务栏打开结案报告并逐项引用原始文件。"},
+    ]
     return {
         "caseId": "prologue_dead_mail",
         "title": "序章：一封死人的邮件",
@@ -147,7 +183,23 @@ def build_prologue() -> dict:
                 "addr": "mirror17.deadletter.zero",
                 "label": "零时邮局 M-17 缓存",
                 "discoverWhen": {"type": "gate", "id": "kg_mirror_search"},
-                "defense": {"mode": "public", "layers": [], "trace": {"enabled": False}},
+                "defense": {
+                    "mode": "crack",
+                    "layers": [
+                        {"id": "MIRROR_HANDSHAKE", "durationSec": 3.0},
+                        {"id": "READONLY_SEAL", "durationSec": 4.0},
+                    ],
+                    "trace": {
+                        "enabled": True,
+                        "totalSeconds": 75.0,
+                        "unfocusedRate": 0.25,
+                        "lockoutSec": 20.0,
+                        "signals": [
+                            {"at": 0.06, "target": "relay.deadletter-17", "reduction": 0.20},
+                            {"at": 0.45, "target": "cache.deadletter-17", "reduction": 0.22},
+                        ],
+                    },
+                },
                 "traceChain": ["deadletter.zero", "mirror-17", "林薇的离线签名盒"],
                 "files": [
                     {"path": "/archive/LW_最后一次校对.zlog", "type": "doc", "content": last_log, "isEvidence": True, "evidenceId": "ev_linwei_log"},
@@ -167,6 +219,14 @@ def build_prologue() -> dict:
                 "unlockEffects": [{"type": "reveal_node", "target": "mirror17.deadletter.zero"}],
             }
         ],
+        "tutorialMessages": tutorial_messages + tutorial_nudges,
+        "tutorialFlow": {
+            "enabled": True,
+            "steps": tutorial_steps,
+            "milestones": [
+                {"id": "first_report_answer", "when": {"type": "report_answered"}, "feedback": {"appId": "report", "pulse": "soft", "sound": "progress_soft"}}
+            ],
+        },
         "sites": [
             {
                 "id": "site_mirror_search",
@@ -191,7 +251,8 @@ def build_prologue() -> dict:
                 "2026-07-24 03:17",
                 "陈默，收到这封信的时候，我大概已经被写进一份很短的事故通报里了。你先别去质问任何人，也别把附件直接转发。它经过一个叫『零时邮局』的旧服务，我把真正的日志放在那边的镜像里，附件只会留下一个编号。你总说我记东西像做审计，这次就按审计的办法来：看原始时间、看签名、看谁有权改动。找到以后，把它复制到本地证据目录。还有，任何时候觉得对方开始注意你，先断开。活着比逞强重要。",
                 "林薇 / 延迟投递编号 DL-0317",
-                [{"name": "LW_最后一次校对.zlog.link", "path": "/mail/LW_最后一次校对.zlog.link", "type": "doc", "content": "附件解析失败。缓存代号：MIRROR-17。主站地址已失效。", "assetId": "art_deadletter_stamp", "description": "带有旧邮局戳记的错误页"}],
+                [{"id": "attachment_deadletter_link", "name": "LW_最后一次校对.zlog.link", "path": "/mail/LW_最后一次校对.zlog.link", "type": "doc", "content": "附件解析失败。缓存代号：MIRROR-17。主站地址已失效。", "assetId": "art_deadletter_stamp", "description": "带有旧邮局戳记的错误页"}],
+                mail_id="mail_deadletter_primary",
             ),
             story_mail(
                 "系统回执：延迟投递已完成",
@@ -199,6 +260,7 @@ def build_prologue() -> dict:
                 "2026-07-24 03:17",
                 "本邮件由停运服务的只读镜像自动发送。投递任务创建于 2026 年 7 月 21 日 02:13，签名账号为 linwei，接收账号为 chenmo。主站停运后，任务内容由 MIRROR-17 缓存保留，缓存只允许读取一次完整正文，但元数据可能继续存在。若收件人需要核对签名，请保留原始投递日志与附件头，不要使用截图代替原文件。此回执不代表平台对正文真实性作出保证。",
                 "DEADLETTER M-17 / 自动签名",
+                mail_id="mail_deadletter_receipt",
             ),
         ],
         "conversations": [],
@@ -225,7 +287,7 @@ def build_prologue() -> dict:
             "clientOutcome": "陈默保存了原始日志，第一次在自己的笔记里写下 REN-0。",
             "darklineFragment": {"id": "frag_ren0_name", "content": "REN-0 不是用户名，更像一把被很多人用过的钥匙。"},
         },
-        "contentManifest": ["林薇剧情邮件全文", "零时邮局回执全文", "延迟投递日志 24 行", "搜索结果 5 条", "林薇加密日志全文"],
+        "contentManifest": ["林薇剧情邮件全文", "零时邮局回执全文", "延迟投递日志 24 行", "搜索结果 5 条", "林薇加密日志全文", "沉浸式教程推进消息 10 条", "沉浸式教程停滞提示 9 条"],
         "artAssets": [
             {
                 "id": "art_deadletter_stamp",

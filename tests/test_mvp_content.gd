@@ -52,6 +52,39 @@ func run(t) -> void:
 	if loaded_cases.size() != 3:
 		repository.free()
 		return
+	var prologue: Dictionary = loaded_cases[0]
+	var prologue_mails: Array = prologue.get("mails", [])
+	t.equal(prologue_mails[0].get("id"), "mail_deadletter_primary", "prologue primary mail has a stable tutorial ID")
+	t.equal(prologue_mails[0].get("attachments", [])[0].get("id"), "attachment_deadletter_link", "prologue attachment has a stable tutorial ID")
+	var tutorial_messages: Array = prologue.get("tutorialMessages", [])
+	var tutorial_steps: Array = prologue.get("tutorialFlow", {}).get("steps", [])
+	t.truthy(tutorial_messages.size() >= 18, "prologue contains finished progression and fallback tutorial prose")
+	t.truthy(prologue.get("contentManifest", []).has("沉浸式教程推进消息 10 条"), "prologue manifest registers every progression message")
+	t.truthy(prologue.get("contentManifest", []).has("沉浸式教程停滞提示 9 条"), "prologue manifest registers every fallback message")
+	t.equal(tutorial_steps.size(), 9, "prologue tutorial has exactly nine immersive steps")
+	var expected_step_ids := ["read_dead_mail", "open_attachment", "resolve_mirror_search", "scan_network", "probe_mirror", "evade_counter_trace", "enter_filesystem", "collect_linwei_log", "complete_report"]
+	var actual_step_ids: Array[String] = []
+	var tutorial_apps := ["terminal", "browser", "mail", "messenger", "viewer", "report"]
+	for step_value in tutorial_steps:
+		actual_step_ids.append(String(step_value.get("id", "")))
+		t.truthy(not String(step_value.get("helpText", "")).is_empty(), "every tutorial step has complete contextual help")
+		t.truthy(tutorial_apps.has(String(step_value.get("feedback", {}).get("appId", ""))), "every tutorial step targets a valid app for feedback")
+	t.equal(actual_step_ids, expected_step_ids, "prologue tutorial step IDs and order stay stable")
+	var forbidden_tutorial_answers: Array[String] = []
+	for gate_value in prologue.get("knowledgeGates", []):
+		for accepted_value in gate_value.get("accept", []):
+			if accepted_value is String:
+				forbidden_tutorial_answers.append(_normalize_text(accepted_value))
+			elif accepted_value is Dictionary:
+				forbidden_tutorial_answers.append(_normalize_text(String(accepted_value.get("user", ""))))
+				forbidden_tutorial_answers.append(_normalize_text(String(accepted_value.get("pass", ""))))
+		for alias_value in gate_value.get("aliases", []):
+			forbidden_tutorial_answers.append(_normalize_text(String(alias_value)))
+	for message_value in tutorial_messages:
+		var normalized_message := _normalize_text(String(message_value.get("text", "")))
+		for forbidden_value in forbidden_tutorial_answers:
+			if forbidden_value.length() >= 4:
+				t.truthy(not normalized_message.contains(forbidden_value), "tutorial prose does not reveal accepted search phrases or credentials")
 	var art_assets := {}
 	for loaded_case in loaded_cases:
 		for asset_value in loaded_case.get("artAssets", []):
@@ -183,3 +216,6 @@ func _file(case_data: Dictionary, evidence_id: String) -> Dictionary:
 			if String(file_value.get("evidenceId", "")) == evidence_id:
 				return file_value
 	return {}
+
+func _normalize_text(value: String) -> String:
+	return value.to_lower().replace(" ", "").replace("-", "").replace("_", "").replace("\t", "").replace("\n", "")
