@@ -90,15 +90,15 @@ powershell -ExecutionPolicy Bypass -File .\tools\export_windows.ps1
 | 文件 | 大小 | SHA-256 |
 |---|---:|---|
 | `builds/windows/ZeroNetTrace.exe` | 109,071,360 bytes（104.02 MiB） | `88B2071F4D952F75CCE87C17643A84F9BC05906C85B5C3A684F025B42EB323E2` |
-| `builds/windows/ZeroNetTrace.pck` | 27,527,736 bytes（26.25 MiB） | `41941994D2B29E32EF5FC1318C150C875D9B31E2BE3F6DA52B04F8D616B4405A` |
+| `builds/windows/ZeroNetTrace.pck` | 27,527,048 bytes（26.25 MiB） | `C4B9EBCAFB4197461C3F3C51DB6FB495BF6B87D9CE8E84C53D012E46A1F5FB80` |
 
-构建时间：2026-07-24 23:26:27 +08:00。
+构建时间：2026-07-24 23:48:15 +08:00。
 
 ## 独立 EXE 启动验证
 
 使用全新独立 `APPDATA` 启动最终 EXE 6 秒，再发送正常窗口关闭消息。验证目录：
 
-`artifacts/exe_smoke_20260724_232732/`
+`artifacts/exe_smoke_20260724_235100/`
 
 结果：
 
