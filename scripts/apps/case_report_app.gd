@@ -1,6 +1,7 @@
 extends "res://scripts/apps/app_window.gd"
 
 signal report_completed(grade: String)
+signal answer_submitted(question_id: String, result: Dictionary)
 
 var runtime
 var questions: Array = []
@@ -65,9 +66,11 @@ func _rebuild() -> void:
 	_update_status()
 
 func _submit_question(question: Dictionary, options: OptionButton, feedback: Label) -> void:
-	var result: Dictionary = runtime.submit_report_answer(String(question.get("id", "")), options.selected)
+	var question_id := String(question.get("id", ""))
+	var result: Dictionary = runtime.submit_report_answer(question_id, options.selected)
 	feedback.text = String(result.get("text", ""))
 	feedback.modulate = Color("#33ff66") if bool(result.get("correct", false)) else Color("#ff6b6b")
+	answer_submitted.emit(question_id, result)
 	_update_status()
 
 func _update_status() -> void:
@@ -83,4 +86,3 @@ func _update_status() -> void:
 
 func _finish() -> void:
 	report_completed.emit(runtime.get_report_grade())
-

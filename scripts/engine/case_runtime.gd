@@ -9,6 +9,9 @@ signal file_opened(addr: String, path: String)
 signal site_visited(site_id: String)
 signal report_answered(question_id: String, option: int, correct: bool)
 signal screenshot_pinned(snapshot: Dictionary)
+signal gate_resolved(gate_id: String)
+signal node_authenticated(addr: String)
+signal counter_trace_reduced(target: String)
 
 const SearchServiceScript = preload("res://scripts/engine/search_service.gd")
 
@@ -110,7 +113,7 @@ func start_crack(addr: String) -> Dictionary:
 	if mode == "credential":
 		return _result(false, "credential_required", "该节点只接受有效凭证。")
 	if mode == "public":
-		authenticated_nodes[addr] = true
+		_authenticate_node(addr)
 		return _result(true, "already_open", "目标无需破解。")
 	var duration := 0.0
 	for layer_value in defense.get("layers", []):
@@ -134,7 +137,7 @@ func tick(delta: float, terminal_focused: bool) -> void:
 			completed.append(addr)
 	for addr in completed:
 		crack_jobs.erase(addr)
-		authenticated_nodes[addr] = true
+		_authenticate_node(addr)
 		if active_trace_node == addr:
 			active_trace_node = addr
 		state_changed.emit()
@@ -201,7 +204,10 @@ func counter_trace(target: String) -> Dictionary:
 	for signal_value in signals:
 		var signal_data: Dictionary = signal_value
 		if String(signal_data.get("target", "")).to_lower() == target.to_lower():
+			var before := trace_progress
 			trace_progress = maxf(0.0, trace_progress - float(signal_data.get("reduction", 0.15)))
+			if trace_progress < before:
+				counter_trace_reduced.emit(String(signal_data.get("target", target)))
 			return _result(true, "trace_reduced", "中继链已识别，反向追踪压力下降。")
 	return _result(false, "trace_miss", "该地址不在当前回溯链。")
 
@@ -225,7 +231,7 @@ func login(addr: String, user: String, password: String) -> Dictionary:
 		if accepted_value is Dictionary:
 			var accepted: Dictionary = accepted_value
 			if String(accepted.get("user", "")).to_lower() == user.to_lower() and String(accepted.get("pass", "")) == password:
-				authenticated_nodes[addr] = true
+				_authenticate_node(addr)
 				_resolve_gate(gate_id)
 				return _result(true, "login_ok", "凭证通过。")
 	return _result(false, "login_failed", "用户名或密码不匹配。")
@@ -528,6 +534,7 @@ func _resolve_gate(gate_id: String) -> void:
 	if gate_id.is_empty() or resolved_gates.has(gate_id):
 		return
 	resolved_gates[gate_id] = true
+	gate_resolved.emit(gate_id)
 	hint_elapsed.erase(gate_id)
 	hint_levels.erase(gate_id)
 	for node_value in case_data.get("network", []):
@@ -541,8 +548,15 @@ func _reveal_node(addr: String) -> void:
 	if not addr.is_empty() and not visible_addresses.has(addr):
 		visible_addresses.append(addr)
 		if nodes.has(addr) and String(nodes[addr].get("defense", {}).get("mode", "public")) == "public":
-			authenticated_nodes[addr] = true
+			_authenticate_node(addr)
 		node_unlocked.emit(addr)
+
+func _authenticate_node(addr: String) -> bool:
+	if addr.is_empty() or authenticated_nodes.has(addr):
+		return false
+	authenticated_nodes[addr] = true
+	node_authenticated.emit(addr)
+	return true
 
 func _find_gate(gate_id: String) -> Dictionary:
 	for gate_value in case_data.get("knowledgeGates", []):

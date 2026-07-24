@@ -1,6 +1,7 @@
 extends "res://scripts/apps/app_window.gd"
 
 signal attachment_open_requested(file_entry: Dictionary)
+signal mail_opened(mail_id: String)
 
 var source_mails: Array = []
 var mails: Array = []
@@ -17,7 +18,7 @@ func _build_body(parent: MarginContainer) -> void:
 	parent.add_child(split)
 	list = ItemList.new()
 	list.custom_minimum_size.x = 250
-	list.item_selected.connect(_show_mail)
+	list.item_selected.connect(_on_mail_selected)
 	split.add_child(list)
 	var right := VBoxContainer.new()
 	split.add_child(right)
@@ -51,16 +52,23 @@ func _refresh_content() -> void:
 	for mail_value in mails:
 		var mail: Dictionary = mail_value
 		list.add_item("%s\n%s" % [mail.get("time", ""), mail.get("subject", "")])
-	if not mails.is_empty():
-		var selected_index := 0
+	if not mails.is_empty() and not selected_key.is_empty():
+		var selected_index := -1
 		for index in mails.size():
 			if _mail_key(mails[index]) == selected_key:
 				selected_index = index
 				break
-		list.select(selected_index)
-		_show_mail(selected_index)
+		if selected_index >= 0:
+			list.select(selected_index)
+			_show_mail(selected_index)
+		else:
+			detail.text = "[color=#7f8782]选择邮件以读取原文[/color]"
+			attachments.clear()
+	elif not mails.is_empty():
+		detail.text = "[color=#7f8782]选择邮件以读取原文[/color]"
+		attachments.clear()
 	else:
-		detail.text = ""
+		detail.text = "[color=#7f8782]当前没有可读取邮件[/color]"
 		attachments.clear()
 
 func _mail_key(mail: Dictionary) -> String:
@@ -75,6 +83,13 @@ func _show_mail(index: int) -> void:
 	for attachment_value in mail.get("attachments", []):
 		var attachment: Dictionary = attachment_value
 		attachments.add_item("附件：%s（双击打开）" % attachment.get("name", attachment.get("path", "")))
+
+func _on_mail_selected(index: int) -> void:
+	if index < 0 or index >= mails.size():
+		return
+	_show_mail(index)
+	var mail: Dictionary = mails[index]
+	mail_opened.emit(String(mail.get("id", _mail_key(mail))))
 
 func _open_attachment(index: int) -> void:
 	var selected := list.get_selected_items()

@@ -1,6 +1,7 @@
 extends Control
 
 const DesktopAtmosphereScript = preload("res://scripts/engine/desktop_atmosphere.gd")
+const TutorialRuntimeScript = preload("res://scripts/engine/tutorial_runtime.gd")
 
 const APP_SCENES := {
 	"terminal": preload("res://scenes/apps/terminal_app.tscn"),
@@ -14,6 +15,7 @@ const APP_SCENES := {
 
 var repository
 var runtime
+var tutorial_runtime
 var save_service
 var event_bus
 var audio_director
@@ -41,7 +43,7 @@ func _ready() -> void:
 	_build_desktop()
 	_load_initial_case()
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if clock_label:
 		clock_label.text = Time.get_time_string_from_system().left(5)
 	if runtime and horror_director:
@@ -52,6 +54,8 @@ func _process(_delta: float) -> void:
 		for hint in runtime.consume_hints():
 			apps["messenger"].push_hint("线人提示", String(hint.get("text", "")), clock_label.text)
 			status_label.text = "通讯器收到 %d 级提示" % int(hint.get("level", 1))
+	if tutorial_runtime:
+		tutorial_runtime.tick(delta)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and event.keycode == KEY_F11:
@@ -141,11 +145,23 @@ func _build_desktop() -> void:
 	crt_overlay.material = crt_material
 	add_child(crt_overlay)
 	apps["terminal"].open_requested.connect(_open_viewer)
-	apps["terminal"].command_executed.connect(audio_director.play_key_tick)
-	apps["mail"].attachment_open_requested.connect(_open_viewer)
+	apps["terminal"].command_executed.connect(_on_terminal_command)
+	apps["mail"].mail_opened.connect(_on_mail_opened)
+	apps["mail"].attachment_open_requested.connect(_on_mail_attachment_requested)
 	apps["viewer"].pin_requested.connect(_pin_snapshot)
 	apps["notebook"].notes_changed.connect(func(_text): _save_now())
+	apps["report"].answer_submitted.connect(_on_report_answer_submitted)
 	apps["report"].report_completed.connect(_on_report_completed)
+	if not runtime.gate_resolved.is_connected(_on_gate_resolved):
+		runtime.gate_resolved.connect(_on_gate_resolved)
+	if not runtime.node_authenticated.is_connected(_on_node_authenticated):
+		runtime.node_authenticated.connect(_on_node_authenticated)
+	if not runtime.counter_trace_reduced.is_connected(_on_counter_trace_reduced):
+		runtime.counter_trace_reduced.connect(_on_counter_trace_reduced)
+	if not runtime.file_opened.is_connected(_on_runtime_file_opened):
+		runtime.file_opened.connect(_on_runtime_file_opened)
+	if not runtime.evidence_collected.is_connected(_on_runtime_evidence_collected):
+		runtime.evidence_collected.connect(_on_runtime_evidence_collected)
 	_apply_theme("mono")
 
 func _load_initial_case() -> void:
@@ -170,13 +186,22 @@ func _load_case_at(index: int, saved := {}) -> void:
 	if current_case_data.is_empty():
 		status_label.text = repository.last_error
 		return
+	tutorial_runtime = null
 	runtime.setup(current_case_data)
 	atmosphere.clear_persistent_marks()
 	if saved is Dictionary and String(saved.get("currentCase", "")) == String(current_case_data.get("caseId", "")):
 		runtime.apply_save_data(saved)
 	_restore_persistent_horror_marks()
+	var saved_tutorial_state: Dictionary = {}
+	if saved is Dictionary and String(saved.get("currentCase", "")) == String(current_case_data.get("caseId", "")):
+		saved_tutorial_state = saved.get("tutorialState", {})
+	tutorial_runtime = TutorialRuntimeScript.new()
+	tutorial_runtime.configure(current_case_data, saved_tutorial_state, _build_tutorial_facts())
+	tutorial_runtime.step_advanced.connect(_on_tutorial_step_advanced)
+	tutorial_runtime.feedback_requested.connect(_on_tutorial_feedback_requested)
+	tutorial_runtime.nudge_requested.connect(_deliver_tutorial_content)
 	case_label.text = "零网寻踪 // %s" % current_case_data.get("title", "未知案件")
-	status_label.text = String(current_case_data.get("hook", {}).get("playerGoal", "等待操作"))
+	status_label.text = "本地工作区就绪"
 	apps["terminal"].configure(runtime)
 	apps["browser"].configure(runtime, current_case_data)
 	apps["mail"].set_mails(current_case_data.get("mails", []), runtime)
@@ -214,6 +239,79 @@ func _open_viewer(file_entry: Dictionary) -> void:
 	apps["viewer"].open_file(file_entry)
 	apps["viewer"].snap_right()
 
+func _on_terminal_command(raw_text: String, result: Dictionary) -> void:
+	audio_director.play_key_tick()
+	if not bool(result.get("ok", false)):
+		return
+	var parsed: Dictionary = apps["terminal"].router.parse(raw_text) if apps.has("terminal") and apps["terminal"].router != null else {}
+	var command := String(parsed.get("command", raw_text.get_slice(" ", 0))).to_lower()
+	var metadata := {"resultCode": String(result.get("code", ""))}
+	var args: Array = parsed.get("args", [])
+	if not args.is_empty() and command in ["probe", "crack", "login"]:
+		metadata["addr"] = String(args[0])
+	_observe_tutorial("command_succeeded", command, metadata)
+
+func _on_mail_opened(mail_id: String) -> void:
+	_observe_tutorial("mail_opened", mail_id)
+
+func _on_mail_attachment_requested(file_entry: Dictionary) -> void:
+	var attachment_id := String(file_entry.get("id", file_entry.get("path", "")))
+	_observe_tutorial("attachment_opened", attachment_id, {"path": String(file_entry.get("path", ""))})
+	_open_viewer(file_entry)
+
+func _on_gate_resolved(gate_id: String) -> void:
+	_observe_tutorial("gate_resolved", gate_id)
+
+func _on_node_authenticated(addr: String) -> void:
+	_observe_tutorial("node_authenticated", addr)
+
+func _on_counter_trace_reduced(target: String) -> void:
+	_observe_tutorial("counter_trace_reduced", target)
+
+func _on_runtime_file_opened(addr: String, path: String) -> void:
+	_observe_tutorial("file_opened", path, {"addr": addr})
+
+func _on_runtime_evidence_collected(evidence_id: String) -> void:
+	_observe_tutorial("evidence_collected", evidence_id)
+
+func _on_report_answer_submitted(question_id: String, result: Dictionary) -> void:
+	_observe_tutorial("report_answered", question_id, {"resultCode": String(result.get("code", "")), "correct": bool(result.get("correct", false))})
+
+func _observe_tutorial(action_type: String, target: String = "", metadata: Dictionary = {}) -> void:
+	if tutorial_runtime == null:
+		return
+	tutorial_runtime.observe(action_type, target, metadata)
+	_save_now()
+
+func _on_tutorial_step_advanced(_step: Dictionary, deliveries: Array) -> void:
+	for delivery in deliveries:
+		_deliver_tutorial_content(delivery)
+
+func _deliver_tutorial_content(delivery: Dictionary) -> void:
+	var content_id := String(delivery.get("contentId", ""))
+	var message := _tutorial_message(content_id)
+	if message.is_empty():
+		return
+	var sender := String(message.get("sender", "ZERO-SHELL"))
+	var body_text := String(message.get("text", ""))
+	match String(delivery.get("channel", "messenger")):
+		"terminal":
+			apps["terminal"].inject_system_line("%s // %s" % [sender, body_text])
+		_:
+			apps["messenger"].push_hint(sender, body_text, clock_label.text if clock_label else "--:--")
+	if status_label:
+		status_label.text = "恢复了一条离线记录"
+	_save_now()
+
+func _tutorial_message(content_id: String) -> Dictionary:
+	for message_value in current_case_data.get("tutorialMessages", []):
+		if String(message_value.get("id", "")) == content_id:
+			return message_value
+	return {}
+
+func _on_tutorial_feedback_requested(_app_id: String, _style: String, _sound: String) -> void:
+	pass
+
 func _pin_snapshot(label: String, image_path: String) -> void:
 	apps["notebook"].pin_snapshot(label, image_path)
 	status_label.text = "画面已钉入笔记本"
@@ -243,6 +341,8 @@ func _restore_persistent_horror_marks() -> void:
 			atmosphere.set_persistent_mark(mark_id)
 
 func _on_report_completed(grade: String) -> void:
+	if runtime and runtime.is_report_complete():
+		_observe_tutorial("report_complete", String(current_case_data.get("caseId", "")))
 	status_label.text = "本案评级 %s // 证据已封存" % grade
 	_record_case_completion(grade)
 	_save_now()
@@ -340,9 +440,33 @@ func _record_case_completion(grade: String) -> void:
 	}
 
 func _build_save_payload() -> Dictionary:
-	var payload: Dictionary = runtime.to_save_data() if runtime else {"schemaVersion": 1}
+	var payload: Dictionary = runtime.to_save_data() if runtime else {}
+	payload["schemaVersion"] = 2
+	payload["tutorialState"] = tutorial_runtime.to_save_data() if tutorial_runtime != null else {}
 	payload["completedCases"] = campaign_progress.duplicate(true)
 	return payload
+
+func _build_tutorial_facts() -> Array:
+	var facts: Array = []
+	if runtime == null:
+		return facts
+	for gate_id in runtime.resolved_gates.keys():
+		facts.append({"type": "gate_resolved", "target": String(gate_id)})
+	for addr in runtime.authenticated_nodes.keys():
+		facts.append({"type": "node_authenticated", "target": String(addr)})
+	for read_key_value in runtime.read_files:
+		var read_key := String(read_key_value)
+		var separator := read_key.find(":")
+		var addr := read_key.left(separator) if separator >= 0 else ""
+		var path := read_key.substr(separator + 1) if separator >= 0 else read_key
+		facts.append({"type": "file_opened", "target": path, "metadata": {"addr": addr}})
+	for evidence_id in runtime.collected_evidence:
+		facts.append({"type": "evidence_collected", "target": String(evidence_id)})
+	for question_id in runtime.report_current_answers.keys():
+		facts.append({"type": "report_answered", "target": String(question_id), "metadata": {"option": runtime.report_current_answers[question_id]}})
+	if runtime.is_report_complete():
+		facts.append({"type": "report_complete", "target": String(current_case_data.get("caseId", ""))})
+	return facts
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:

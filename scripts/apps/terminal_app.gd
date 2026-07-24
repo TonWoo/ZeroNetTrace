@@ -1,7 +1,7 @@
 extends "res://scripts/apps/app_window.gd"
 
 signal open_requested(file_entry: Dictionary)
-signal command_executed
+signal command_executed(raw_text: String, result: Dictionary)
 
 var runtime
 var router
@@ -111,7 +111,7 @@ func _on_command(command_text: String) -> void:
 		open_requested.emit(result)
 	input.clear()
 	_history_index = router.command_history.size()
-	command_executed.emit()
+	command_executed.emit(command, result)
 
 func _on_input_event(event: InputEvent) -> void:
 	if not event is InputEventKey or not event.pressed or router == null:
