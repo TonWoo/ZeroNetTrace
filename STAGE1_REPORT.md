@@ -19,16 +19,26 @@
 
 - 原生 Godot 桌面外壳：1600×900 设计分辨率、Compatibility 渲染器、默认独占全屏、混合窗口管理、任务栏、截图钉入笔记。
 - 终端核心：全部规定命令、虚构节点与文件系统、异步多阶段破解、确定性中继线索、实时反向追踪、终端失焦 25% 追踪速度、100% 断线/清零/20 秒锁定/污点。
+- 本地帮助：`help` 分组索引、`help <命令>` 语法/用途/通用示例、相近命令拼写建议、缺参恢复，以及 `help tutorial`、`tutorial skip`、`tutorial restart`。
+- 沉浸式序章教学：9 个数据驱动步骤、10 条推进消息、9 条停滞提示；方向来自邮件、附件、终端和通讯器，不显示固定目标面板、步骤编号、箭头或答案。正确方向首次触发对应窗口的克制边框脉冲与非恐怖双音。
 - 自由搜索：任意文本输入、别名归一、可信噪音结果、知识门解锁和 6/12/18 分钟三级提示。
 - 辅助 App：浏览器、邮件、通讯器、查看器、笔记本、结案报告；内容按 `unlockWhen` 随调查进度刷新。
 - 恐怖层：A 级桌面氛围、B/C 级 JSON 事件、完整/减弱/关闭三档、事件幂等、终端注入、持久异常标记和喘息段。
 - 第 39 格：完整档闪帧不超过 0.4 秒、sting、5 秒静默和苏晚后续消息；减弱档不闪帧；关闭档不播放恐怖演出。
 - 结案报告：3～5 道单选题、证据门控、首答正确率 S/A/B 评级、自动存档。
-- 单档存档：`user://save.json`、`schemaVersion`、临时文件替换、`.bak` 备份和损坏恢复。
-- 主题与表现：黑白、磷光绿、琥珀主题，CRT shader，六种独立站点身份，程序化嗡鸣、键击、硬盘寻道、sting 和静默。
+- 单档存档：`user://save.json`、`schemaVersion = 2`、教程状态、临时文件替换、`.bak` 备份、损坏恢复和 schema v1 旧档兼容。
+- 主题与表现：黑白、磷光绿、琥珀主题，CRT shader，六种独立站点身份，程序化嗡鸣、键击、硬盘寻道、非恐怖进度双音、sting 和静默。
 - 美术投放：阶段 1 保持深灰占位；`assets/art_manifest.md` 登记 10 个资产的用途、尺寸和英文 Prompt。正式 PNG 放入 `assets/art/<资产ID>.png` 后由查看器自动加载。
 
 ## 内容交付数量
+
+### 序章《一封死人的邮件》
+
+- 2 封成文邮件与 1 个稳定 ID 附件
+- 9 个顺序教学步骤，覆盖读信、附件、自由搜索、scan、probe、crack/trace、文件系统、原文取证与结案
+- 10 条成品推进消息、9 条成品停滞提示
+- 2 层短时虚构锁、2 个反追踪中继、2 份可复核证据文件
+- 3 道结案题；逐步教学结束后 01/02 仅保留全局 help 与三级提示
 
 ### 01《凌晨两点的门禁》
 
@@ -62,7 +72,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\test.ps1
 
 结果：
 
-- `PASS: 391 assertions`
+- `PASS: 768 assertions`
 - `PASS: app window minimize and restore preserve geometry`
 - `PASS: horror intensity off clears active presentation`
 - `PASS: headless main-scene smoke test is clean`
@@ -80,22 +90,22 @@ powershell -ExecutionPolicy Bypass -File .\tools\export_windows.ps1
 | 文件 | 大小 | SHA-256 |
 |---|---:|---|
 | `builds/windows/ZeroNetTrace.exe` | 109,071,360 bytes（104.02 MiB） | `88B2071F4D952F75CCE87C17643A84F9BC05906C85B5C3A684F025B42EB323E2` |
-| `builds/windows/ZeroNetTrace.pck` | 23,111,292 bytes（22.04 MiB） | `E12EDD7236EEBCD60481ADC4621402A4C897B9736D49372AB1747E4B578CCD9C` |
+| `builds/windows/ZeroNetTrace.pck` | 27,527,736 bytes（26.25 MiB） | `41941994D2B29E32EF5FC1318C150C875D9B31E2BE3F6DA52B04F8D616B4405A` |
 
-构建时间：2026-07-24 20:40:31 +08:00。
+构建时间：2026-07-24 23:26:27 +08:00。
 
 ## 独立 EXE 启动验证
 
 使用全新独立 `APPDATA` 启动最终 EXE 6 秒，再发送正常窗口关闭消息。验证目录：
 
-`artifacts/exe_smoke_20260724_204120/`
+`artifacts/exe_smoke_20260724_232732/`
 
 结果：
 
 - 窗口接受关闭请求，未强制终止
 - 进程退出码 `0`
 - 生成 `save.json`
-- `schemaVersion = 1`
+- `schemaVersion = 2`
 - `currentCase = prologue_dead_mail`
 - 日志存在，`ERROR` / `SCRIPT ERROR` / `WARNING` 命中数为 `0`
 
@@ -126,6 +136,6 @@ powershell -ExecutionPolicy Bypass -File .\tools\export_windows.ps1
 
 ## 人工验收边界
 
-自动化已验证数据可达性、关键别名、完整关卡推进、第 39 格事件绑定和三档演出状态。以下 North Star 需要真实陌生玩家试玩确认：玩家是否能在未读文档的情况下，从合同自行想到并输入“长明”或合法别名；调查节奏是否落在目标时长；第 39 格的主观惊吓效果是否达到预期。
+自动化已验证序章 9 步教学从邮件到结案完整闭合、`help` 常驻、数据可达性、关键别名、完整关卡推进、第 39 格事件绑定和三档演出状态。以下 North Star 仍需要真实陌生玩家试玩确认：玩家是否能在两分钟内自行发现 `help`，能否只凭邮件/附件推导序章搜索方向，能否在未读文档的情况下从合同自行想到并输入“长明”或合法别名；调查节奏是否落在目标时长；第 39 格的主观惊吓效果是否达到预期。
 
 阶段 1 到此停止，等待验收反馈。阶段 2 的下一项是补齐 03～06 关数据、关卡切换与存档完善。
