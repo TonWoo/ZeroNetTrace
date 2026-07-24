@@ -2,8 +2,27 @@ class_name TerminalCommandRouter
 extends RefCounted
 
 const SUPPORTED_COMMANDS := [
-	"scan", "probe", "crack", "login", "ls", "cd", "cat", "open", "get", "trace", "note", "disconnect"
+	"scan", "probe", "crack", "login", "ls", "cd", "cat", "open", "get", "trace", "note", "disconnect", "help", "tutorial"
 ]
+
+const COMMAND_HELP := {
+	"scan": {"group": "网络侦察", "syntax": "scan", "purpose": "列出当前网络边界内可见节点。", "when": "获得新地址或进入新网络边界后。", "example": "scan"},
+	"probe": {"group": "网络侦察", "syntax": "probe <节点>", "purpose": "识别节点的访问模式、锁层和反向追踪配置。", "when": "在 crack 前确认目标状态。", "example": "probe NODE"},
+	"crack": {"group": "网络侦察", "syntax": "crack <节点>", "purpose": "启动虚构锁层的异步破解任务。", "when": "probe 确认目标可破解后。", "example": "crack NODE"},
+	"login": {"group": "网络侦察", "syntax": "login <节点> -u <用户> -p <密码>", "purpose": "使用已调查得到的凭证登录节点。", "when": "probe 显示目标只接受凭证时。", "example": "login NODE -u USER -p PASS"},
+	"cd": {"group": "文件系统", "syntax": "cd [节点:]<目录>", "purpose": "切换当前节点或目录。", "when": "节点已获得访问权限后。", "example": "cd NODE:/archive"},
+	"ls": {"group": "文件系统", "syntax": "ls [目录]", "purpose": "列出当前目录内容。", "when": "进入节点后先了解文件结构。", "example": "ls /archive"},
+	"cat": {"group": "文件系统", "syntax": "cat <文件>", "purpose": "在终端阅读文本、日志或表格原文。", "when": "需要核对可读文件内容时。", "example": "cat /path/file.log"},
+	"open": {"group": "文件系统", "syntax": "open <文件>", "purpose": "在查看器中打开文件。", "when": "文件需要图像、视频或专用查看方式时。", "example": "open /path/frame.dat"},
+	"get": {"group": "文件系统", "syntax": "get <文件>", "purpose": "把原始文件复制到本地证据目录。", "when": "确认文件需要作为结案证据保存时。", "example": "get /path/evidence.log"},
+	"trace": {"group": "风险控制", "syntax": "trace <中继>", "purpose": "利用 COUNTER-PING 中继降低反向追踪压力。", "when": "破解或浏览时出现中继提示后。", "example": "trace RELAY"},
+	"disconnect": {"group": "风险控制", "syntax": "disconnect", "purpose": "主动断开当前网络会话。", "when": "追踪压力过高或准备离开节点时。", "example": "disconnect"},
+	"note": {"group": "调查辅助", "syntax": "note <内容>", "purpose": "把文字追加到笔记本。", "when": "需要保存自己的推理时。", "example": "note 镜面位置与旧照片不一致"},
+	"help": {"group": "系统帮助", "syntax": "help [命令]", "purpose": "查看命令索引或单条命令说明。", "when": "不清楚下一步操作方法时。", "example": "help probe"},
+	"tutorial": {"group": "系统帮助", "syntax": "tutorial <skip|restart>", "purpose": "跳过或重新同步序章教学。", "when": "只想关闭教学投递，或需要恢复教学上下文时。", "example": "tutorial restart"}
+}
+
+const HELP_GROUPS := ["网络侦察", "文件系统", "风险控制", "调查辅助", "系统帮助"]
 
 var runtime
 var current_node := ""
@@ -23,7 +42,16 @@ func execute(raw_text: String) -> Dictionary:
 		return _result(false, "empty_command", String(parsed.get("error", "请输入命令。")))
 	command_history.append(raw_text)
 	if not SUPPORTED_COMMANDS.has(command):
-		return _result(false, "unknown_command", "未知命令：%s。输入规定命令继续。" % command)
+		var suggestion := _closest_command(command)
+		if not suggestion.is_empty():
+			return _result(false, "unknown_command", "未知命令：%s。你是否想输入 %s？" % [command, suggestion])
+		return _result(false, "unknown_command", "未知命令：%s。输入 help 查看本地命令手册。" % command)
+	if command == "help":
+		var help_target := _required_arg(parsed.get("args", []), 0)
+		return _result(true, "help_ok", _help_index() if help_target.is_empty() else _help_for(help_target))
+	var missing := _validate_required_arguments(command, parsed)
+	if not missing.is_empty():
+		return _missing_argument(command)
 	if runtime == null:
 		return _result(false, "runtime_missing", "案件运行时尚未加载。")
 	var args: Array = parsed.get("args", [])
@@ -122,6 +150,60 @@ func _required_arg(args: Array, index: int, fallback := "") -> String:
 	if index < args.size():
 		return String(args[index])
 	return String(fallback)
+
+func _help_index() -> String:
+	var lines: Array[String] = ["ZERO-SHELL 本地命令手册"]
+	for group in HELP_GROUPS:
+		var commands: Array[String] = []
+		for command in SUPPORTED_COMMANDS:
+			var entry: Dictionary = COMMAND_HELP.get(command, {})
+			if String(entry.get("group", "")) == group:
+				commands.append(command)
+		if not commands.is_empty():
+			lines.append("\n[%s]" % group)
+			lines.append("  " + "  ".join(commands))
+	lines.append("\n输入 help <命令> 查看用途、语法和通用示例。")
+	return "\n".join(lines)
+
+func _help_for(command: String) -> String:
+	var normalized := command.to_lower()
+	if not COMMAND_HELP.has(normalized):
+		var suggestion := _closest_command(normalized)
+		if not suggestion.is_empty():
+			return "本地手册中没有 %s。你是否想查看 help %s？" % [command, suggestion]
+		return "本地手册中没有 %s。输入 help 查看命令索引。" % command
+	var entry: Dictionary = COMMAND_HELP[normalized]
+	return "%s\n用途：%s\n语法：%s\n何时使用：%s\n通用示例：%s" % [
+		normalized.to_upper(),
+		String(entry.get("purpose", "")),
+		String(entry.get("syntax", "")),
+		String(entry.get("when", "")),
+		String(entry.get("example", ""))
+	]
+
+func _validate_required_arguments(command: String, parsed: Dictionary) -> String:
+	var args: Array = parsed.get("args", [])
+	if command in ["probe", "crack", "cat", "open", "get", "trace"] and _required_arg(args, 0).is_empty():
+		return command
+	if command == "login":
+		var options: Dictionary = parsed.get("options", {})
+		if _required_arg(args, 0).is_empty() or String(options.get("u", "")).is_empty() or String(options.get("p", "")).is_empty():
+			return command
+	return ""
+
+func _missing_argument(command: String) -> Dictionary:
+	var entry: Dictionary = COMMAND_HELP.get(command, {})
+	return _result(false, "missing_argument", "参数不足。语法：%s\n输入 help %s 查看本地手册。" % [String(entry.get("syntax", command)), command])
+
+func _closest_command(command: String) -> String:
+	var closest := ""
+	var best_score := 0.0
+	for candidate in SUPPORTED_COMMANDS:
+		var score := command.similarity(candidate)
+		if score > best_score:
+			best_score = score
+			closest = candidate
+	return closest if best_score >= 0.55 else ""
 
 func _result(ok: bool, code: String, text: String) -> Dictionary:
 	return {"ok": ok, "code": code, "text": text}

@@ -11,3 +11,6 @@ func run(t) -> void:
 	t.equal(parsed.get("args"), ["10.24.7.115"], "address remains positional")
 	t.equal(parsed.get("options", {}).get("u"), "suye", "username option is parsed")
 	t.equal(parsed.get("options", {}).get("p"), "mantou0713", "password option is parsed")
+	var help_parsed: Dictionary = parser.parse("help crack")
+	t.equal(help_parsed.get("command"), "help", "help command is parsed")
+	t.equal(help_parsed.get("args"), ["crack"], "help target remains positional")
