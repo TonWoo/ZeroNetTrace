@@ -5,6 +5,7 @@
 # Workspace-local tools and generated deliverables
 .tools/
 .worktrees/
+.superpowers/
 builds/
 artifacts/
 
